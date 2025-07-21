@@ -49,9 +49,57 @@ namespace MsgFileParser
 
             try
             {
+                // Validate input file
+                if (string.IsNullOrWhiteSpace(msgFilePath))
+                {
+                    Console.WriteLine("Error: MSG file path cannot be empty");
+                    return;
+                }
+
                 if (!File.Exists(msgFilePath))
                 {
                     Console.WriteLine($"Error: File not found - {msgFilePath}");
+                    return;
+                }
+
+                // Validate file extension
+                string fileExtension = Path.GetExtension(msgFilePath).ToLowerInvariant();
+                if (fileExtension != ".msg")
+                {
+                    Console.WriteLine($"Warning: File does not have .msg extension - {fileExtension}");
+                    Console.WriteLine("Attempting to process anyway...");
+                }
+
+                // Check file access permissions
+                try
+                {
+                    using (var stream = File.OpenRead(msgFilePath))
+                    {
+                        // Just check if we can open the file
+                    }
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    Console.WriteLine($"Error: Access denied to file - {msgFilePath}");
+                    return;
+                }
+                catch (IOException ex)
+                {
+                    Console.WriteLine($"Error: Cannot access file - {ex.Message}");
+                    return;
+                }
+
+                // Check file size (warn for very large files)
+                var fileInfo = new FileInfo(msgFilePath);
+                if (fileInfo.Length > 50 * 1024 * 1024) // 50MB
+                {
+                    Console.WriteLine($"Warning: Large file detected ({fileInfo.Length / (1024 * 1024)}MB). Processing may take longer...");
+                }
+
+                // Validate and prepare output path
+                if (string.IsNullOrWhiteSpace(outputPath))
+                {
+                    Console.WriteLine("Error: Output path cannot be empty");
                     return;
                 }
 
@@ -63,69 +111,162 @@ namespace MsgFileParser
                     return;
                 }
 
+                // Check if output file already exists and warn
+                if (File.Exists(outputPath))
+                {
+                    Console.WriteLine($"Warning: Output file already exists and will be overwritten - {outputPath}");
+                }
+
+                // Check write permissions for output location
+                try
+                {
+                    string testFile = Path.Combine(outputDir ?? ".", "temp_write_test.tmp");
+                    File.WriteAllText(testFile, "test");
+                    File.Delete(testFile);
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    Console.WriteLine($"Error: No write permission for output directory - {outputDir ?? "."}");
+                    return;
+                }
+                catch (IOException ex)
+                {
+                    Console.WriteLine($"Error: Cannot write to output directory - {ex.Message}");
+                    return;
+                }
+
                 ProcessMsgFile(msgFilePath, outputPath);
                 Console.WriteLine("Processing completed successfully.");
             }
+            catch (ArgumentException ex)
+            {
+                Console.WriteLine($"Error: Invalid file path - {ex.Message}");
+            }
+            catch (NotSupportedException ex)
+            {
+                Console.WriteLine($"Error: Operation not supported - {ex.Message}");
+            }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error processing file: {ex.Message}");
+                Console.WriteLine($"Unexpected error: {ex.Message}");
+                Console.WriteLine("Please check the input file and try again.");
             }
         }
 
         static void ProcessMsgFile(string msgFilePath, string outputPath)
         {
-            // Read the MSG file
-            using (var msg = new Storage.Message(msgFilePath))
+            try
             {
-                // Prepare the content
-                var content = new StringBuilder();
-                content.AppendLine($"Subject: {msg.Subject}");
-                content.AppendLine($"From: {msg.Sender}");
-                content.AppendLine($"Date: {msg.SentOn?.ToString("yyyy-MM-dd HH:mm:ss")}");
-
-                // Add recipients
-                if (msg.Recipients.Count > 0)
+                // Read the MSG file
+                using (var msg = new Storage.Message(msgFilePath))
                 {
-                    content.AppendLine("\nRecipients:");
-                    foreach (var recipient in msg.Recipients)
+                    // Prepare the content
+                    var content = new StringBuilder();
+                    
+                    // Handle subject safely
+                    string subject = string.IsNullOrEmpty(msg.Subject) ? "[No Subject]" : msg.Subject;
+                    content.AppendLine($"Subject: {subject}");
+                    
+                    // Handle sender safely
+                    string sender = msg.Sender?.ToString() ?? "[Unknown Sender]";
+                    content.AppendLine($"From: {sender}");
+                    
+                    // Handle date safely
+                    string date = msg.SentOn?.ToString("yyyy-MM-dd HH:mm:ss") ?? "[Unknown Date]";
+                    content.AppendLine($"Date: {date}");
+
+                    // Add recipients with error handling
+                    if (msg.Recipients?.Count > 0)
                     {
-                        content.AppendLine($"- {recipient.Email} ({recipient.DisplayName})");
+                        content.AppendLine("\nRecipients:");
+                        foreach (var recipient in msg.Recipients)
+                        {
+                            try
+                            {
+                                string email = string.IsNullOrEmpty(recipient.Email) ? "[No Email]" : recipient.Email;
+                                string displayName = string.IsNullOrEmpty(recipient.DisplayName) ? "[No Name]" : recipient.DisplayName;
+                                content.AppendLine($"- {email} ({displayName})");
+                            }
+                            catch (Exception ex)
+                            {
+                                content.AppendLine($"- [Error reading recipient: {ex.Message}]");
+                            }
+                        }
+                    }
+                    else
+                    {
+                        content.AppendLine("\nRecipients: [None found]");
+                    }
+
+                    // Add body with enhanced error handling
+                    content.AppendLine("\nBody:");
+                    
+                    string bodyText = "";
+                    try
+                    {
+                        // Try to get the body text - MSG files can have different body formats
+                        if (!string.IsNullOrEmpty(msg.BodyText))
+                        {
+                            bodyText = msg.BodyText;
+                            Console.WriteLine("Using plain text body");
+                        }
+                        else if (!string.IsNullOrEmpty(msg.BodyHtml))
+                        {
+                            // If no plain text body, use HTML body
+                            bodyText = msg.BodyHtml;
+                            Console.WriteLine("Using HTML body (contains HTML formatting)");
+                        }
+                        else if (!string.IsNullOrEmpty(msg.BodyRtf))
+                        {
+                            // If no plain text or HTML, try RTF body
+                            bodyText = msg.BodyRtf;
+                            Console.WriteLine("Using RTF body (contains RTF formatting)");
+                        }
+                        else
+                        {
+                            bodyText = "[No body content found]";
+                            Console.WriteLine("No body content found in any format");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        bodyText = $"[Error reading email body: {ex.Message}]";
+                        Console.WriteLine($"Warning: Could not read email body - {ex.Message}");
+                    }
+                    
+                    content.AppendLine(bodyText);
+
+                    // Write to file with error handling
+                    try
+                    {
+                        File.WriteAllText(outputPath, content.ToString(), Encoding.UTF8);
+                        Console.WriteLine($"Created: {outputPath}");
+                    }
+                    catch (IOException ex)
+                    {
+                        throw new IOException($"Failed to write output file: {ex.Message}", ex);
+                    }
+                    catch (UnauthorizedAccessException ex)
+                    {
+                        throw new UnauthorizedAccessException($"Access denied writing to: {outputPath}", ex);
                     }
                 }
-
-                // Add body
-                content.AppendLine("\nBody:");
-                
-                // Try to get the body text - MSG files can have different body formats
-                string bodyText = "";
-                if (!string.IsNullOrEmpty(msg.BodyText))
-                {
-                    bodyText = msg.BodyText;
-                    Console.WriteLine("Using plain text body");
-                }
-                else if (!string.IsNullOrEmpty(msg.BodyHtml))
-                {
-                    // If no plain text body, use HTML body
-                    bodyText = msg.BodyHtml;
-                    Console.WriteLine("Using HTML body (contains HTML formatting)");
-                }
-                else if (!string.IsNullOrEmpty(msg.BodyRtf))
-                {
-                    // If no plain text or HTML, try RTF body
-                    bodyText = msg.BodyRtf;
-                    Console.WriteLine("Using RTF body (contains RTF formatting)");
-                }
-                else
-                {
-                    bodyText = "[No body content found]";
-                    Console.WriteLine("No body content found in any format");
-                }
-                
-                content.AppendLine(bodyText);
-
-                // Write to file
-                File.WriteAllText(outputPath, content.ToString());
-                Console.WriteLine($"Created: {outputPath}");
+            }
+            catch (InvalidDataException ex)
+            {
+                throw new InvalidDataException($"Invalid MSG file format: {ex.Message}", ex);
+            }
+            catch (OutOfMemoryException ex)
+            {
+                throw new OutOfMemoryException($"File too large to process: {msgFilePath}", ex);
+            }
+            catch (Exception ex) when (ex.Message.Contains("not a valid compound document"))
+            {
+                throw new InvalidDataException($"File is not a valid MSG file: {msgFilePath}", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Failed to process MSG file: {ex.Message}", ex);
             }
         }
     }

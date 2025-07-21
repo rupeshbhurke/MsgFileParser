@@ -13,15 +13,16 @@ namespace MsgFileParser
             // Register code pages for proper encoding handling
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
-            Console.WriteLine("Outlook MSG File Parser");
-            Console.WriteLine("=======================\n");
+            Console.WriteLine("MSG File Parser v1.0");
+            Console.WriteLine("===================");
 
             if (args.Length == 0)
             {
-                Console.WriteLine("Usage: MsgFileParser <path_to_msg_file> [output_file_path]");
-                Console.WriteLine("If output_file_path is not specified, a .txt file will be created in the same directory as the MSG file.");
-                Console.WriteLine("You can specify either a complete file path or just a directory (ending with / or \\).");
-                return;
+                Console.WriteLine("ERROR: INVALID_USAGE - No input file specified");
+                Console.WriteLine("USAGE: MsgFileParser <path_to_msg_file> [output_file_path]");
+                Console.WriteLine("INFO: If output_file_path is not specified, a .txt file will be created in the same directory as the MSG file.");
+                Console.WriteLine("INFO: You can specify either a complete file path or just a directory (ending with / or \\).");
+                Environment.Exit(1);
             }
 
             string msgFilePath = args[0];
@@ -52,22 +53,22 @@ namespace MsgFileParser
                 // Validate input file
                 if (string.IsNullOrWhiteSpace(msgFilePath))
                 {
-                    Console.WriteLine("Error: MSG file path cannot be empty");
-                    return;
+                    Console.WriteLine("ERROR: INVALID_INPUT - MSG file path cannot be empty");
+                    Environment.Exit(2);
                 }
 
                 if (!File.Exists(msgFilePath))
                 {
-                    Console.WriteLine($"Error: File not found - {msgFilePath}");
-                    return;
+                    Console.WriteLine($"ERROR: FILE_NOT_FOUND - {msgFilePath}");
+                    Environment.Exit(3);
                 }
 
                 // Validate file extension
                 string fileExtension = Path.GetExtension(msgFilePath).ToLowerInvariant();
                 if (fileExtension != ".msg")
                 {
-                    Console.WriteLine($"Warning: File does not have .msg extension - {fileExtension}");
-                    Console.WriteLine("Attempting to process anyway...");
+                    Console.WriteLine($"WARNING: INVALID_EXTENSION - File has {fileExtension} extension, expected .msg");
+                    Console.WriteLine("INFO: Attempting to process anyway...");
                 }
 
                 // Check file access permissions
@@ -80,41 +81,41 @@ namespace MsgFileParser
                 }
                 catch (UnauthorizedAccessException)
                 {
-                    Console.WriteLine($"Error: Access denied to file - {msgFilePath}");
-                    return;
+                    Console.WriteLine($"ERROR: ACCESS_DENIED - Cannot read file: {msgFilePath}");
+                    Environment.Exit(4);
                 }
                 catch (IOException ex)
                 {
-                    Console.WriteLine($"Error: Cannot access file - {ex.Message}");
-                    return;
+                    Console.WriteLine($"ERROR: IO_ERROR - Cannot access file: {ex.Message}");
+                    Environment.Exit(5);
                 }
 
                 // Check file size (warn for very large files)
                 var fileInfo = new FileInfo(msgFilePath);
                 if (fileInfo.Length > 50 * 1024 * 1024) // 50MB
                 {
-                    Console.WriteLine($"Warning: Large file detected ({fileInfo.Length / (1024 * 1024)}MB). Processing may take longer...");
+                    Console.WriteLine($"WARNING: LARGE_FILE - Size: {fileInfo.Length / (1024 * 1024)}MB, processing may take longer");
                 }
 
                 // Validate and prepare output path
                 if (string.IsNullOrWhiteSpace(outputPath))
                 {
-                    Console.WriteLine("Error: Output path cannot be empty");
-                    return;
+                    Console.WriteLine("ERROR: INVALID_OUTPUT - Output path cannot be empty");
+                    Environment.Exit(6);
                 }
 
                 // Ensure output directory exists
                 string? outputDir = Path.GetDirectoryName(outputPath);
                 if (!string.IsNullOrEmpty(outputDir) && !Directory.Exists(outputDir))
                 {
-                    Console.WriteLine($"Error: Output directory not found - {outputDir}");
-                    return;
+                    Console.WriteLine($"ERROR: DIRECTORY_NOT_FOUND - Output directory does not exist: {outputDir}");
+                    Environment.Exit(7);
                 }
 
                 // Check if output file already exists and warn
                 if (File.Exists(outputPath))
                 {
-                    Console.WriteLine($"Warning: Output file already exists and will be overwritten - {outputPath}");
+                    Console.WriteLine($"WARNING: FILE_EXISTS - Output file will be overwritten: {outputPath}");
                 }
 
                 // Check write permissions for output location
@@ -126,30 +127,33 @@ namespace MsgFileParser
                 }
                 catch (UnauthorizedAccessException)
                 {
-                    Console.WriteLine($"Error: No write permission for output directory - {outputDir ?? "."}");
-                    return;
+                    Console.WriteLine($"ERROR: WRITE_ACCESS_DENIED - No write permission for directory: {outputDir ?? "."}");
+                    Environment.Exit(8);
                 }
                 catch (IOException ex)
                 {
-                    Console.WriteLine($"Error: Cannot write to output directory - {ex.Message}");
-                    return;
+                    Console.WriteLine($"ERROR: WRITE_IO_ERROR - Cannot write to output directory: {ex.Message}");
+                    Environment.Exit(9);
                 }
 
                 ProcessMsgFile(msgFilePath, outputPath);
-                Console.WriteLine("Processing completed successfully.");
+                Console.WriteLine($"SUCCESS: Processing completed - Output: {outputPath}");
+                Environment.Exit(0);
             }
             catch (ArgumentException ex)
             {
-                Console.WriteLine($"Error: Invalid file path - {ex.Message}");
+                Console.WriteLine($"ERROR: INVALID_PATH - {ex.Message}");
+                Environment.Exit(10);
             }
             catch (NotSupportedException ex)
             {
-                Console.WriteLine($"Error: Operation not supported - {ex.Message}");
+                Console.WriteLine($"ERROR: NOT_SUPPORTED - {ex.Message}");
+                Environment.Exit(11);
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Unexpected error: {ex.Message}");
-                Console.WriteLine("Please check the input file and try again.");
+                Console.WriteLine($"ERROR: UNEXPECTED - {ex.Message}");
+                Environment.Exit(99);
             }
         }
 
@@ -208,30 +212,30 @@ namespace MsgFileParser
                         if (!string.IsNullOrEmpty(msg.BodyText))
                         {
                             bodyText = msg.BodyText;
-                            Console.WriteLine("Using plain text body");
+                            Console.WriteLine("INFO: Using plain text body");
                         }
                         else if (!string.IsNullOrEmpty(msg.BodyHtml))
                         {
                             // If no plain text body, use HTML body
                             bodyText = msg.BodyHtml;
-                            Console.WriteLine("Using HTML body (contains HTML formatting)");
+                            Console.WriteLine("INFO: Using HTML body (contains formatting)");
                         }
                         else if (!string.IsNullOrEmpty(msg.BodyRtf))
                         {
                             // If no plain text or HTML, try RTF body
                             bodyText = msg.BodyRtf;
-                            Console.WriteLine("Using RTF body (contains RTF formatting)");
+                            Console.WriteLine("INFO: Using RTF body (contains formatting)");
                         }
                         else
                         {
                             bodyText = "[No body content found]";
-                            Console.WriteLine("No body content found in any format");
+                            Console.WriteLine("WARNING: NO_BODY_CONTENT - No body found in any format");
                         }
                     }
                     catch (Exception ex)
                     {
                         bodyText = $"[Error reading email body: {ex.Message}]";
-                        Console.WriteLine($"Warning: Could not read email body - {ex.Message}");
+                        Console.WriteLine($"WARNING: BODY_READ_ERROR - {ex.Message}");
                     }
                     
                     content.AppendLine(bodyText);
@@ -240,33 +244,49 @@ namespace MsgFileParser
                     try
                     {
                         File.WriteAllText(outputPath, content.ToString(), Encoding.UTF8);
-                        Console.WriteLine($"Created: {outputPath}");
+                        Console.WriteLine($"INFO: File created successfully: {outputPath}");
                     }
                     catch (IOException ex)
                     {
-                        throw new IOException($"Failed to write output file: {ex.Message}", ex);
+                        throw new IOException($"WRITE_FAILED: {ex.Message}", ex);
                     }
                     catch (UnauthorizedAccessException ex)
                     {
-                        throw new UnauthorizedAccessException($"Access denied writing to: {outputPath}", ex);
+                        throw new UnauthorizedAccessException($"WRITE_ACCESS_DENIED: {outputPath}", ex);
                     }
                 }
             }
             catch (InvalidDataException ex)
             {
-                throw new InvalidDataException($"Invalid MSG file format: {ex.Message}", ex);
+                Console.WriteLine($"ERROR: INVALID_MSG_FORMAT - {ex.Message}");
+                Environment.Exit(20);
             }
-            catch (OutOfMemoryException ex)
+            catch (OutOfMemoryException)
             {
-                throw new OutOfMemoryException($"File too large to process: {msgFilePath}", ex);
+                Console.WriteLine($"ERROR: OUT_OF_MEMORY - File too large: {msgFilePath}");
+                Environment.Exit(21);
             }
-            catch (Exception ex) when (ex.Message.Contains("not a valid compound document"))
+            catch (Exception ex) when (ex.Message.Contains("not a valid compound document") || 
+                                      ex.Message.Contains("Invalid OLE structured storage file") ||
+                                      ex.Message.Contains("OLE compound document"))
             {
-                throw new InvalidDataException($"File is not a valid MSG file: {msgFilePath}", ex);
+                Console.WriteLine($"ERROR: INVALID_MSG_FILE - Not a valid MSG file: {msgFilePath}");
+                Environment.Exit(22);
+            }
+            catch (IOException ex) when (ex.Message.StartsWith("WRITE_FAILED"))
+            {
+                Console.WriteLine($"ERROR: {ex.Message}");
+                Environment.Exit(23);
+            }
+            catch (UnauthorizedAccessException ex) when (ex.Message.StartsWith("WRITE_ACCESS_DENIED"))
+            {
+                Console.WriteLine($"ERROR: {ex.Message}");
+                Environment.Exit(24);
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException($"Failed to process MSG file: {ex.Message}", ex);
+                Console.WriteLine($"ERROR: PROCESSING_FAILED - {ex.Message}");
+                Environment.Exit(25);
             }
         }
     }

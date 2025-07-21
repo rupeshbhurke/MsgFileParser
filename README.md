@@ -120,47 +120,92 @@ This project uses the following NuGet packages:
 - **Architecture**: Console Application
 - **Language**: C#
 
-## Error Handling & Validation
+## Error Handling & Exit Codes
 
-The application includes comprehensive error handling and validation for:
+The application provides standardized exit codes and structured output messages for easy integration with other processes.
 
-### Input Validation
-- ✅ **File existence checking** - Verifies MSG file exists before processing
-- ✅ **File extension validation** - Warns if file doesn't have .msg extension
-- ✅ **File access permissions** - Checks read permissions before processing
-- ✅ **Large file warnings** - Alerts for files over 50MB that may take longer
-- ✅ **Empty/invalid path detection** - Prevents processing of invalid file paths
+### Exit Codes
 
-### Output Validation
-- ✅ **Output directory verification** - Ensures target directory exists
-- ✅ **Write permission checking** - Verifies write access to output location
-- ✅ **File overwrite warnings** - Alerts when output file already exists
-- ✅ **Path validation** - Validates output path format and accessibility
+| Code | Category | Description |
+|------|----------|-------------|
+| **0** | SUCCESS | Processing completed successfully |
+| **1** | INVALID_USAGE | No input file specified |
+| **2** | INVALID_INPUT | MSG file path is empty or invalid |
+| **3** | FILE_NOT_FOUND | Input MSG file does not exist |
+| **4** | ACCESS_DENIED | Cannot read the input file (permission denied) |
+| **5** | IO_ERROR | Input/output error accessing the file |
+| **6** | INVALID_OUTPUT | Output path is empty or invalid |
+| **7** | DIRECTORY_NOT_FOUND | Output directory does not exist |
+| **8** | WRITE_ACCESS_DENIED | No write permission for output directory |
+| **9** | WRITE_IO_ERROR | Cannot write to output directory |
+| **10** | INVALID_PATH | Invalid file path format |
+| **11** | NOT_SUPPORTED | Operation not supported |
+| **20** | INVALID_MSG_FORMAT | Invalid MSG file format |
+| **21** | OUT_OF_MEMORY | File too large to process |
+| **22** | INVALID_MSG_FILE | Not a valid MSG file |
+| **23** | WRITE_FAILED | Failed to write output file |
+| **24** | WRITE_ACCESS_DENIED | Access denied writing output file |
+| **25** | PROCESSING_FAILED | General processing failure |
+| **99** | UNEXPECTED | Unexpected error occurred |
 
-### MSG File Processing
-- ✅ **Invalid file format detection** - Identifies non-MSG or corrupted files
-- ✅ **Memory exhaustion protection** - Handles extremely large files gracefully
-- ✅ **Missing data handling** - Safely processes emails with missing components
-- ✅ **Encoding error recovery** - Handles text encoding issues gracefully
+### Output Message Format
 
-### Error Messages
-The application provides clear, actionable error messages:
+All messages follow a structured format for easy parsing:
+
+#### Success Messages
+```
+SUCCESS: Processing completed - Output: /path/to/output.txt
+```
+
+#### Error Messages
+```
+ERROR: <ERROR_CODE> - <Human readable description>
+```
+
+#### Warning Messages
+```
+WARNING: <WARNING_CODE> - <Description>
+```
+
+#### Info Messages
+```
+INFO: <Description>
+```
+
+### Example Output
+
+#### Successful Processing
 ```bash
-# File not found
-Error: File not found - nonexistent.msg
+$ dotnet run "email.msg" "output.txt"
+MSG File Parser v1.0
+===================
+INFO: Using HTML body (contains formatting)
+INFO: File created successfully: output.txt
+SUCCESS: Processing completed - Output: output.txt
+$ echo $?
+0
+```
 
-# Wrong file type
-Warning: File does not have .msg extension - .txt
-Attempting to process anyway...
+#### Error Case
+```bash
+$ dotnet run "missing.msg"
+MSG File Parser v1.0
+===================
+ERROR: FILE_NOT_FOUND - missing.msg
+$ echo $?
+3
+```
 
-# Permission issues
-Error: Access denied to file - protected.msg
-
-# Large files
-Warning: Large file detected (75MB). Processing may take longer...
-
-# Invalid MSG format
-Unexpected error: File is not a valid MSG file: document.pdf
+#### Warning Case
+```bash
+$ dotnet run "document.pdf"
+MSG File Parser v1.0
+===================
+WARNING: INVALID_EXTENSION - File has .pdf extension, expected .msg
+INFO: Attempting to process anyway...
+ERROR: INVALID_MSG_FILE - Not a valid MSG file: document.pdf
+$ echo $?
+22
 ```
 
 ## Troubleshooting
@@ -212,13 +257,156 @@ If processing very large MSG files causes memory issues:
 - Process files individually rather than in batches
 - Consider processing on a system with more available RAM
 
+## Integration Guide
+
+### For Calling Applications
+
+When integrating this tool into other applications, monitor both exit codes and output messages:
+
+#### Shell Script Integration
+```bash
+#!/bin/bash
+output=$(dotnet run "email.msg" "output.txt" 2>&1)
+exit_code=$?
+
+if [ $exit_code -eq 0 ]; then
+    echo "Success: $output"
+    # Process the generated file
+else
+    echo "Error (Code $exit_code): $output"
+    # Handle the error based on exit code
+fi
+```
+
+#### Python Integration
+```python
+import subprocess
+import sys
+
+def process_msg_file(msg_path, output_path):
+    try:
+        result = subprocess.run([
+            "dotnet", "run", msg_path, output_path
+        ], capture_output=True, text=True, cwd="/path/to/MsgFileParser")
+        
+        if result.returncode == 0:
+            print(f"Success: {result.stdout}")
+            return True
+        else:
+            print(f"Error {result.returncode}: {result.stdout}")
+            return False
+    except Exception as e:
+        print(f"Failed to execute: {e}")
+        return False
+```
+
+#### Error Code Handling
+```bash
+case $exit_code in
+    0) echo "Processing completed successfully" ;;
+    1) echo "Usage error - check command arguments" ;;
+    3) echo "Input file not found" ;;
+    7) echo "Output directory missing" ;;
+    22) echo "Invalid MSG file format" ;;
+    *) echo "Unexpected error occurred" ;;
+esac
+```
+
+## Testing
+
+The project includes a comprehensive test script that validates all functionality and error conditions.
+
+### Running Tests
+
+Execute the test script to validate all scenarios:
+
+```bash
+./test_msgparser.sh
+```
+
+**Note**: Make sure the script is executable. If not, run:
+```bash
+chmod +x test_msgparser.sh
+```
+
+### Test Coverage
+
+The test script validates:
+
+| Test Scenario | Validates |
+|---------------|-----------|
+| **No arguments** | INVALID_USAGE (Exit Code 1) |
+| **Empty file path** | INVALID_INPUT (Exit Code 2) |
+| **Non-existent file** | FILE_NOT_FOUND (Exit Code 3) |
+| **Invalid file format** | INVALID_MSG_FILE (Exit Code 22) |
+| **Missing output directory** | DIRECTORY_NOT_FOUND (Exit Code 7) |
+| **No write permissions** | WRITE_ACCESS_DENIED (Exit Code 8) |
+| **Valid MSG processing** | SUCCESS (Exit Code 0) |
+| **File overwrite warning** | Warning handling + SUCCESS |
+| **Default output behavior** | Auto-filename generation |
+| **Directory output** | Auto-filename in specified directory |
+
+### Test Output
+
+The script provides color-coded results:
+- 🟢 **Green**: Passed tests
+- 🔴 **Red**: Failed tests  
+- 🟡 **Yellow**: Skipped tests (missing prerequisites)
+- 🔵 **Blue**: Test information
+
+```bash
+==========================================
+TEST RESULTS SUMMARY
+==========================================
+Total Tests:  10
+Passed:       10
+Failed:       0
+All tests passed! ✓
+```
+
+### Test Requirements
+
+- .NET 8.0 SDK installed
+- Valid MSG file in the project directory (copies `1.msg` if available)
+- Write permissions in the project directory
+- Linux/Unix environment (for permission testing)
+
+### Automated Integration
+
+The test script returns appropriate exit codes:
+- **Exit Code 0**: All tests passed
+- **Exit Code 1**: Some tests failed
+
+This makes it suitable for CI/CD pipelines:
+
+```bash
+# In your CI/CD pipeline
+./test_msgparser.sh
+if [ $? -eq 0 ]; then
+    echo "All tests passed - ready for deployment"
+else
+    echo "Tests failed - deployment blocked"
+    exit 1
+fi
+```
+
 ## Contributing
 
 1. Fork the repository
 2. Create a feature branch
 3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
+4. **Run the test suite**: `./test_msgparser.sh`
+5. Ensure all tests pass
+6. Test thoroughly with your own MSG files
+7. Submit a pull request
+
+### Development Guidelines
+
+- Follow existing code style and patterns
+- Add appropriate error handling for new features
+- Update exit codes table if adding new error conditions
+- Test edge cases and error scenarios
+- Update README.md if adding new functionality
 
 ## License
 

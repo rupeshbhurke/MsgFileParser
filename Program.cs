@@ -18,13 +18,34 @@ namespace MsgFileParser
 
             if (args.Length == 0)
             {
-                Console.WriteLine("Usage: MsgFileParser <path_to_msg_file> [output_directory]");
-                Console.WriteLine("If output_directory is not specified, the text file will be created in the same directory as the MSG file.");
+                Console.WriteLine("Usage: MsgFileParser <path_to_msg_file> [output_file_path]");
+                Console.WriteLine("If output_file_path is not specified, a .txt file will be created in the same directory as the MSG file.");
+                Console.WriteLine("You can specify either a complete file path or just a directory (ending with / or \\).");
                 return;
             }
 
             string msgFilePath = args[0];
-            string outputDirectory = args.Length > 1 ? args[1] : Path.GetDirectoryName(msgFilePath);
+            string outputPath;
+            
+            if (args.Length > 1)
+            {
+                // User specified output path
+                outputPath = args[1];
+                
+                // If they specified a directory, auto-generate filename
+                if (Directory.Exists(args[1]) || args[1].EndsWith("/") || args[1].EndsWith("\\"))
+                {
+                    string fileName = Path.GetFileNameWithoutExtension(msgFilePath);
+                    outputPath = Path.Combine(args[1].TrimEnd('/', '\\'), $"{fileName}.txt");
+                }
+            }
+            else
+            {
+                // Auto-generate in same directory as MSG file
+                string fileName = Path.GetFileNameWithoutExtension(msgFilePath);
+                string directory = Path.GetDirectoryName(msgFilePath) ?? ".";
+                outputPath = Path.Combine(directory, $"{fileName}.txt");
+            }
 
             try
             {
@@ -34,13 +55,15 @@ namespace MsgFileParser
                     return;
                 }
 
-                if (!Directory.Exists(outputDirectory))
+                // Ensure output directory exists
+                string? outputDir = Path.GetDirectoryName(outputPath);
+                if (!string.IsNullOrEmpty(outputDir) && !Directory.Exists(outputDir))
                 {
-                    Console.WriteLine($"Error: Output directory not found - {outputDirectory}");
+                    Console.WriteLine($"Error: Output directory not found - {outputDir}");
                     return;
                 }
 
-                ProcessMsgFile(msgFilePath, outputDirectory);
+                ProcessMsgFile(msgFilePath, outputPath);
                 Console.WriteLine("Processing completed successfully.");
             }
             catch (Exception ex)
@@ -49,14 +72,11 @@ namespace MsgFileParser
             }
         }
 
-        static void ProcessMsgFile(string msgFilePath, string outputDirectory)
+        static void ProcessMsgFile(string msgFilePath, string outputPath)
         {
             // Read the MSG file
             using (var msg = new Storage.Message(msgFilePath))
             {
-                string fileName = Path.GetFileNameWithoutExtension(msgFilePath);
-                string outputPath = Path.Combine(outputDirectory, $"{fileName}.txt");
-
                 // Prepare the content
                 var content = new StringBuilder();
                 content.AppendLine($"Subject: {msg.Subject}");

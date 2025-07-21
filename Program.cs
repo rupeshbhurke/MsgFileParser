@@ -75,7 +75,33 @@ namespace MsgFileParser
 
                 // Add body
                 content.AppendLine("\nBody:");
-                content.AppendLine(msg.BodyText);
+                
+                // Try to get the body text - MSG files can have different body formats
+                string bodyText = "";
+                if (!string.IsNullOrEmpty(msg.BodyText))
+                {
+                    bodyText = msg.BodyText;
+                    Console.WriteLine("Using plain text body");
+                }
+                else if (!string.IsNullOrEmpty(msg.BodyHtml))
+                {
+                    // If no plain text body, use HTML body
+                    bodyText = msg.BodyHtml;
+                    Console.WriteLine("Using HTML body (contains HTML formatting)");
+                }
+                else if (!string.IsNullOrEmpty(msg.BodyRtf))
+                {
+                    // If no plain text or HTML, try RTF body
+                    bodyText = msg.BodyRtf;
+                    Console.WriteLine("Using RTF body (contains RTF formatting)");
+                }
+                else
+                {
+                    bodyText = "[No body content found]";
+                    Console.WriteLine("No body content found in any format");
+                }
+                
+                content.AppendLine(bodyText);
 
                 // Write to file
                 File.WriteAllText(outputPath, content.ToString());

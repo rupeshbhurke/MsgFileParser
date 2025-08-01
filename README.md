@@ -6,7 +6,7 @@ You can now build a Docker image using the pre-built self-contained executable f
 ### 1. Publish the Executable
 First, publish your app locally:
 ```bash
-dotnet publish -c Release -r linux-x64 --self-contained true -p:PublishSingleFile=true -o ./publish/
+dotnet publish MsgFileParser.csproj -c Release -r linux-x64 --self-contained true -p:PublishSingleFile=true -o ./publish/
 ```
 
 ### 2. Use the Minimal Dockerfile

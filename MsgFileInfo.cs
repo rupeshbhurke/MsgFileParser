@@ -10,5 +10,7 @@ namespace MsgFileParser
         public string? BodyText { get; set; }
         public string? BodyHtml { get; set; }
         public string? BodyRtf { get; set; }
+        // List of image attachments: (ContentId, MimeType, Base64Data)
+        public List<(string ContentId, string MimeType, string Base64Data)> ImageAttachments { get; set; } = new();
     }
 }

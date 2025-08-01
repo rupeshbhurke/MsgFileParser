@@ -47,6 +47,23 @@ namespace MsgFileParser
                 htmlBody = $"<pre>{System.Net.WebUtility.HtmlEncode(body)}</pre>";
             }
 
+            // Embed images as Base64 in HTML
+            if (info.ImageAttachments != null && info.ImageAttachments.Count > 0)
+            {
+                foreach (var img in info.ImageAttachments)
+                {
+                    string cidRef = $"cid:{img.ContentId}";
+                    string base64Tag = $"data:{img.MimeType};base64,{img.Base64Data}";
+                    // Replace all src="cid:..." with src="data:..."
+                    htmlBody = System.Text.RegularExpressions.Regex.Replace(
+                        htmlBody,
+                        $"src=[\"']{cidRef}[\"']",
+                        $"src=\"{base64Tag}\"",
+                        System.Text.RegularExpressions.RegexOptions.IgnoreCase
+                    );
+                }
+            }
+
             // Build classic email header block
             string from = "";
             if (!string.IsNullOrEmpty(info.SenderDisplayName) && !string.IsNullOrEmpty(info.SenderEmail))

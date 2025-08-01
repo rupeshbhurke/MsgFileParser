@@ -1,18 +1,44 @@
-## Docker Usage
 
-You can run MsgFileParser in a container for easy deployment and consistent environment.
+## Docker Usage (Pre-built Executable)
 
-### Build the Docker image
+You can now build a Docker image using the pre-built self-contained executable from your local `publish/` folder. This approach is faster and produces a smaller image, as it skips the build process inside Docker.
+
+### 1. Publish the Executable
+First, publish your app locally:
+```bash
+dotnet publish -c Release -r linux-x64 --self-contained true -p:PublishSingleFile=true -o ./publish/
+```
+
+### 2. Use the Minimal Dockerfile
+Place the following Dockerfile in your project root:
+```dockerfile
+FROM mcr.microsoft.com/dotnet/runtime-deps:8.0
+WORKDIR /app
+
+# Install Linux dependencies for MSGReader
+RUN apt-get update && apt-get install -y libgdiplus libc6-dev && rm -rf /var/lib/apt/lists/*
+
+# Copy published files from local 'publish' directory
+COPY publish/ .
+
+ENTRYPOINT ["./MsgFileParser"]
+```
+
+### 3. Build the Docker Image
 ```bash
 docker build -t msgfileparser .
 ```
 
-### Run the parser in Docker
+### 4. Run the Parser in Docker
 Mount your working directory to access input/output files:
 ```bash
-docker run --rm -v $(pwd):/data msgfileparser /data/1.msg /data/output.txt --text
+docker run --rm -v $(pwd):/data msgfileparser /data/input.msg /data/output.txt --text
 ```
-Replace `/data/1.msg` and `/data/output.txt` with your actual file paths. You can use `--html` for HTML export.
+Replace `/data/input.msg` and `/data/output.txt` with your actual file paths. Use `--html` for HTML export.
+
+### Notes
+- The image only contains the runtime and your published binary—no SDK or build tools.
+- Make sure your `publish/` folder contains the self-contained build before building the image.
 
 ### Linux Dependency
 The container automatically installs `libgdiplus` and `libc6-dev` for MSGReader compatibility.

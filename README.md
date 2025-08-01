@@ -79,13 +79,13 @@ dotnet run "email.msg" "/path/to/output/"
 
 ## Output Format
 
-The extracted text file contains:
+The application supports four different usage patterns:
 
 - **Subject**: Email subject line
 - **From**: Sender information
 - **Date**: Email timestamp (YYYY-MM-DD HH:mm:ss format)
 - **Recipients**: List of all recipients with email addresses and display names
-- **Body**: Email content (preserves formatting from original)
+Creates a file with your exact specified name and location. You can specify the export format as a third argument:
 
 ### Sample Output
 ```
@@ -99,6 +99,13 @@ Recipients:
 
 Body:
 Hello Team,
+ 
+### 4. Export Format
+You can specify the export format as a third argument:
+
+- `--text` (default): Export as plain text
+- `--html`: Export as HTML
+
 
 Please join us for the meeting tomorrow at 2 PM.
 
@@ -113,6 +120,7 @@ This project uses the following NuGet packages:
 - [MSGReader](https://www.nuget.org/packages/MSGReader/) (4.3.0) - For parsing MSG files
 - [System.Text.Encoding.CodePages](https://www.nuget.org/packages/System.Text.Encoding.CodePages/) (8.0.0) - For proper text encoding support
 
+dotnet run "email.msg" "/path/to/output.html" --html
 ## Technical Details
 
 - **Target Framework**: .NET 8.0
@@ -147,6 +155,24 @@ The application provides standardized exit codes and structured output messages 
 | **24** | WRITE_ACCESS_DENIED | Access denied writing output file |
 | **25** | PROCESSING_FAILED | General processing failure |
 | **99** | UNEXPECTED | Unexpected error occurred |
+
+## Exit Codes
+
+Exit codes are defined in the `ExitCode` enum (`ExitCode.cs`) for maintainability:
+
+| Enum Value         | Code | Description                                 |
+|--------------------|------|---------------------------------------------|
+| Success            | 0    | Success                                    |
+| InvalidUsage       | 1    | Invalid usage (missing or incorrect args)   |
+| FileNotFound       | 3    | File not found                             |
+| AccessDenied       | 4    | Access denied                              |
+| IoError            | 5    | IO error                                   |
+| DirectoryNotFound  | 7    | Directory not found                        |
+| InvalidPath        | 10   | Invalid path                               |
+| NotSupported       | 11   | Not supported                              |
+| Unexpected         | 99   | Unexpected error                           |
+
+Reference: See `ExitCode.cs` for the authoritative list.
 
 ### Output Message Format
 

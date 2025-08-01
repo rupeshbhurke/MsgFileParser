@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <title>Fw: Autobot | External | Support | Unable to use ML features in AutoBot</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 2em; }
+        .meta { margin-bottom: 1em; }
+        .recipients { margin-bottom: 1em; }
+        .body { border-top: 1px solid #ccc; padding-top: 1em; }
+    </style>
+</head>
+<body>
+    <div class='meta'>
+        <strong>Subject:</strong> Fw: Autobot | External | Support | Unable to use ML features in AutoBot<br>
+        <strong>From:</strong> MsgReader.Outlook.Storage+Sender<br>
+        <strong>Date:</strong> 2025-07-31 11:55:32<br>
+    </div>
+    <div class='recipients'>
+        <strong>Recipients:</strong><br>
+        - Rupesh.Bhurke@Konsultera.in (Rupesh Bhurke)
+    </div>
+    <div class='body'>
+        <html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=Windows-1252">
+<style type="text/css" style="display:none;"> P {margin-top:0;margin-bottom:0;} </style>
+</head>
+<body dir="ltr">
+<div style="font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, Calibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0);">
+<br>
+</div>
+<div id="appendonsend"></div>
+<hr style="display:inline-block;width:98%" tabindex="-1">
+<div id="divRplyFwdMsg" dir="ltr"><font face="Calibri, sans-serif" style="font-size:11pt" color="#000000"><b>From:</b> Tanvi Doshi &lt;tanvi.doshi@Konsultera.in&gt;<br>
+<b>Sent:</b> 11 June 2025 16:13<br>
+<b>To:</b> Sajjan Choudhary &lt;Sajjan.Choudhary@integreon.com&gt;; iLab Support &lt;ilab.support@integreon.com&gt;; Saurav Singhania &lt;saurav.singhania@integreon.com&gt;<br>
+<b>Cc:</b> Ananta Sarathi &lt;Ananta.Sarathi@integreon.com&gt;; Sachin Joshi &lt;Sachin.Joshi@Konsultera.in&gt;; Rupesh Bhurke &lt;Rupesh.Bhurke@Konsultera.in&gt;; Sahil Parekh &lt;Sahil.parekh@konsultera.in&gt;; Santosh Gopalakrishnan &lt;Santosh.G@konsultera.in&gt;; Sajeev Kutty &lt;sajeev.kutty@konsultera.in&gt;<br>
+<b>Subject:</b> RE: Autobot | External | Support | Unable to use ML features in AutoBot</font>
+<div>&nbsp;</div>
+</div>
+<style>
+<!--
+@font-face
+	{font-family:"Cambria Math"}
+@font-face
+	{font-family:Calibri}
+@font-face
+	{font-family:"Calibri Light"}
+@font-face
+	{font-family:Aptos}
+p.x_MsoNormal, li.x_MsoNormal, div.x_MsoNormal
+	{margin:0cm;
+	font-size:12.0pt;
+	font-family:"Aptos",sans-serif}
+a:link, span.x_MsoHyperlink
+	{color:blue;
+	text-decoration:underline}
+span.x_EmailStyle22
+	{font-family:"Aptos",sans-serif;
+	color:windowtext}
+.x_MsoChpDefault
+	{font-size:10.0pt}
+@page WordSection1
+	{margin:72.0pt 72.0pt 72.0pt 72.0pt}
+div.x_WordSection1
+	{}
+ol
+	{margin-bottom:0cm}
+ul
+	{margin-bottom:0cm}
+-->
+</style>
+<div lang="EN-US" link="blue" vlink="purple" style="word-wrap:break-word">
+<div class="x_WordSection1">
+<p class="x_MsoNormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif">Hi Sajjan,</span></p>
+<p class="x_MsoNormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif; color:black">&nbsp;</span></p>
+<p class="x_MsoNormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif; color:black">As discussed during our call today, we wanted to formally confirm that the GPU container initialization issue on the Autobot server has been successfully resolved.</span></p>
+<p class="x_MsoNormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span></p>
+<p class="x_MsoNormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif; color:black">The error encountered
+<b>&quot;could not select device driver &quot;nvidia&quot; with capabilities: [[gpu]]&quot; </b>was traced to the absence of nvidia-docker2 package following a recent driver upgrade on autobot server. The upgrade likely removed or made incompatible the previously working NVIDIA
+ Docker runtime setup.</span></p>
+<p class="x_MsoNormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif; color:black">&nbsp;</span></p>
+<p class="x_MsoNormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif; color:black">We manually configured the NVIDIA Docker repository for Ubuntu 20.04 on the Ubuntu 24.04 system. This allowed us to install nvidia-docker2 despite the version
+ mismatch and successfully re-enable GPU support within Docker containers.</span></p>
+<p class="x_MsoNormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif; color:black">&nbsp;</span></p>
+<p class="x_MsoNormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif; color:black">To ensure continuity, a runbook has been prepared, which includes:</span></p>
+<ul type="disc">
+<li class="x_MsoNormal" style="color:black"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif">&nbsp; &nbsp; Steps to initialize the slide_suggest, pgvector-db, and autobot_mediator containers</span></li><li class="x_MsoNormal" style="color:black"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif">&nbsp; &nbsp; GPU troubleshooting tailored to Ubuntu 24.04, including the workaround for nvidia-docker2 installation</span></li></ul>
+<p class="x_MsoNormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif; color:black">&nbsp;</span></p>
+<p class="x_MsoNormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif; color:black">Please find attachment for steps for your reference along with the mail.</span></p>
+<p class="x_MsoNormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif; color:black">&nbsp;</span></p>
+<p class="x_MsoNormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif; color:black">Regards</span></p>
+<p class="x_MsoNormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif; color:black">&nbsp;</span></p>
+<p class="x_MsoNormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif; color:black">Tanvi</span></p>
+<p class="x_MsoNormal">&nbsp;</p>
+<div>
+<div style="border:none; border-top:solid #E1E1E1 1.0pt; padding:3.0pt 0cm 0cm 0cm">
+<p class="x_MsoNormal"><b><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif">From:</span></b><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif"> Ananta Sarathi &lt;Ananta.Sarathi@integreon.com&gt;
+<br>
+<b>Sent:</b> Wednesday, June 11, 2025 3:13 PM<br>
+<b>To:</b> Tanvi Doshi &lt;tanvi.doshi@Konsultera.in&gt;; Sajjan Choudhary &lt;Sajjan.Choudhary@integreon.com&gt;; iLab Support &lt;ilab.support@integreon.com&gt;; Saurav Singhania &lt;saurav.singhania@integreon.com&gt;; Sachin Joshi &lt;Sachin.Joshi@Konsultera.in&gt;<br>
+<b>Cc:</b> Rupesh Bhurke &lt;Rupesh.Bhurke@Konsultera.in&gt;; Sahil Parekh &lt;Sahil.parekh@konsultera.in&gt;; Santosh Gopalakrishnan &lt;Santosh.G@konsultera.in&gt;; Sajeev Kutty &lt;sajeev.kutty@konsultera.in&gt;<br>
+<b>Subject:</b> RE: Autobot | External | Support | Unable to use ML features in AutoBot<br>
+<b>Importance:</b> High</span></p>
+</div>
+</div>
+<p class="x_MsoNormal">&nbsp;</p>
+<p class="x_MsoNormal"><span style="font-size:10.0pt">Hi Sajjan,</span></p>
+<p class="x_MsoNormal"><span style="font-size:10.0pt">&nbsp;</span></p>
+<p class="x_MsoNormal"><span style="font-size:10.0pt">Good call on asking for more details. Working on these issues and documenting them will help ensure that the Integreon team can handle basic issues more effectively and address them immediately. This way,
+ we can also ensure that the KT team's bandwidth is utilized for critical requirements.</span></p>
+<p class="x_MsoNormal"><span style="font-size:10.0pt">&nbsp;</span></p>
+<p class="x_MsoNormal"><span style="font-size:10.0pt">Thanks for your proactive approach!</span></p>
+<p class="x_MsoNormal"><span style="font-size:10.0pt">&nbsp;</span></p>
+<p class="x_MsoNormal"><span style="font-size:10.0pt">Best regards,</span></p>
+<p class="x_MsoNormal"><span style="font-size:10.0pt">Ananta</span></p>
+<p class="x_MsoNormal">&nbsp;</p>
+<div>
+<table class="x_MsoNormalTable" border="0" cellspacing="0" cellpadding="0" width="860" style="width:645.0pt; background:white">
+<tbody>
+<tr>
+<td width="190" style="width:142.5pt; padding:0cm 0cm 0cm 0cm">
+<p class="x_MsoNormal"><span style="font-size:13.5pt; font-family:&quot;Times New Roman&quot;,serif; color:black"><img width="190" height="140" id="x_Picture_x0020_2030316278" style="width:1.9791in; height:1.4583in" data-outlook-trace="F:1|T:1" src="cid:image001.png@01DBDAEB.D5C72710"></span></p>
+</td>
+<td style="padding:7.5pt 22.5pt 7.5pt 22.5pt">
+<table class="x_MsoNormalTable" border="0" cellspacing="0" cellpadding="0" width="100%" style="width:100.0%">
+<tbody>
+<tr>
+<td style="padding:0cm 0cm 0cm 0cm">
+<table class="x_MsoNormalTable" border="0" cellspacing="0" cellpadding="0" width="100%" style="width:100.0%">
+<tbody>
+<tr>
+<td style="padding:0cm 0cm 0cm 0cm">
+<p class="x_MsoNormal"><b><span style="font-size:16.0pt; font-family:&quot;Arial&quot;,sans-serif; color:#4DC2BF">Ananta Sarathi</span></b><span style="font-size:11.0pt">&nbsp;</span></p>
+</td>
+</tr>
+<tr>
+<td style="padding:0cm 0cm 0cm 0cm">
+<p class="x_MsoNormal"><span style="font-family:&quot;Arial&quot;,sans-serif; color:black">Vice President – i-Lab
+</span></p>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<td colspan="2" style="padding:0cm 0cm 0cm 0cm">
+<table class="x_MsoNormalTable" border="0" cellspacing="0" cellpadding="0" width="100%" style="width:100.0%">
+<tbody>
+<tr>
+<td style="padding:7.5pt 0cm 7.5pt 0cm">
+<table class="x_MsoNormalTable" border="0" cellspacing="0" cellpadding="0" width="100%" style="width:100.0%">
+<tbody>
+<tr style="height:15.0pt">
+<td style="padding:0cm 0cm 0cm 0cm; height:15.0pt">
+<p class="x_MsoNormal"><b><span style="font-size:9.0pt; font-family:&quot;Arial&quot;,sans-serif; color:#4DC2BF">Mobile:</span></b><span style="font-size:10.5pt; font-family:&quot;Arial&quot;,sans-serif">&nbsp;<span style="color:black">+91 982 052 8356</span></span></p>
+</td>
+</tr>
+<tr style="height:15.0pt">
+<td style="padding:0cm 0cm 0cm 0cm; height:15.0pt">
+<p class="x_MsoNormal"><b><span style="font-size:9.0pt; font-family:&quot;Arial&quot;,sans-serif; color:#4DC2BF">Office:</span></b><span style="font-size:10.5pt; font-family:&quot;Arial&quot;,sans-serif">&nbsp;<span style="color:black">+91 22 4060 1382</span></span></p>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+<td style="padding:7.5pt 0cm 7.5pt 0cm">
+<table class="x_MsoNormalTable" border="0" cellspacing="0" cellpadding="0" width="100%" style="width:100.0%">
+<tbody>
+<tr style="height:15.0pt">
+<td style="padding:0cm 0cm 0cm 0cm; height:15.0pt">
+<p class="x_MsoNormal"><b><span style="font-size:9.0pt; font-family:&quot;Arial&quot;,sans-serif; color:#4DC2BF">Email:</span></b><span style="font-size:10.5pt; font-family:&quot;Arial&quot;,sans-serif">&nbsp;</span><span style="font-size:11.0pt; font-family:&quot;Arial&quot;,sans-serif; color:black"><a href="mailto:ananta.sarathi@integreon.com"><span style="color:#0563C1">ananta.sarathi</span><span style="font-size:10.5pt; color:#0563C1">@integreon.com</span></a></span></p>
+</td>
+</tr>
+<tr style="height:15.0pt">
+<td style="padding:0cm 0cm 0cm 0cm; height:15.0pt">
+<p class="x_MsoNormal"><b><span style="font-size:9.0pt; font-family:&quot;Arial&quot;,sans-serif; color:#4DC2BF">Web:</span></b><span style="font-size:10.5pt; font-family:&quot;Arial&quot;,sans-serif">&nbsp;<span style="color:black"><a href="http://www.integreon.com/"><span style="color:#0563C1">www.integreon.com</span></a></span></span></p>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<td style="padding:0cm 0cm 0cm 0cm">
+<table class="x_MsoNormalTable" border="0" cellspacing="0" cellpadding="0" width="100%" style="width:100.0%">
+<tbody>
+<tr style="height:15.0pt">
+<td style="padding:0cm 0cm 0cm 0cm; height:15.0pt">
+<p class="x_MsoNormal"><span style="font-size:13.5pt; font-family:&quot;Arial&quot;,sans-serif; color:black">Do more.&nbsp;<b>Do it better.</b></span></p>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+<td style="padding:0cm 0cm 0cm 0cm"></td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="x_MsoNormal"><span lang="EN-IN" style="font-size:11.0pt">&nbsp;</span></p>
+</div>
+<p class="x_MsoNormal">&nbsp;</p>
+<div>
+<div style="border:none; border-top:solid #E1E1E1 1.0pt; padding:3.0pt 0cm 0cm 0cm">
+<p class="x_MsoNormal"><b><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif">From:</span></b><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif"> Tanvi Doshi &lt;<a href="mailto:tanvi.doshi@Konsultera.in">tanvi.doshi@Konsultera.in</a>&gt;
+<br>
+<b>Sent:</b> Wednesday, June 11, 2025 3:04 PM<br>
+<b>To:</b> Sajjan Choudhary &lt;<a href="mailto:Sajjan.Choudhary@integreon.com">Sajjan.Choudhary@integreon.com</a>&gt;; iLab Support &lt;<a href="mailto:ilab.support@integreon.com">ilab.support@integreon.com</a>&gt;; Ananta Sarathi &lt;<a href="mailto:Ananta.Sarathi@integreon.com">Ananta.Sarathi@integreon.com</a>&gt;;
+ Saurav Singhania &lt;<a href="mailto:saurav.singhania@integreon.com">saurav.singhania@integreon.com</a>&gt;; Sachin Joshi &lt;<a href="mailto:Sachin.Joshi@Konsultera.in">Sachin.Joshi@Konsultera.in</a>&gt;<br>
+<b>Cc:</b> Rupesh Bhurke &lt;<a href="mailto:rupesh.bhurke@konsultera.in">rupesh.bhurke@konsultera.in</a>&gt;; Sahil Parekh &lt;<a href="mailto:Sahil.parekh@konsultera.in">Sahil.parekh@konsultera.in</a>&gt;; Santosh Gopalakrishnan &lt;<a href="mailto:Santosh.G@konsultera.in">Santosh.G@konsultera.in</a>&gt;;
+ Sajeev Kutty &lt;<a href="mailto:sajeev.kutty@konsultera.in">sajeev.kutty@konsultera.in</a>&gt;<br>
+<b>Subject:</b> RE: Autobot | External | Support | Unable to use ML features in AutoBot</span></p>
+</div>
+</div>
+<p class="x_MsoNormal">&nbsp;</p>
+<div style="border:solid #9C6500 1.0pt; padding:1.0pt 1.0pt 1.0pt 1.0pt">
+<p class="x_MsoNormal" style="line-height:12.0pt; background:#FFCC00"><b><span style="font-size:10.0pt; font-family:&quot;Calibri&quot;,sans-serif; color:black">[EXTERNAL]:</span></b><span style="font-size:10.0pt; font-family:&quot;Calibri&quot;,sans-serif; color:black"> This
+ email originated from <b>outside </b>Integreon. Be Cautious when opening attachments &amp; links.</span></p>
+</div>
+<p class="x_MsoNormal">&nbsp;</p>
+<div>
+<p class="x_MsoNormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif">Looping
+<a id="OWAAM8DDD03784AEE4BD48418EBE273A657C2" href="mailto:Rupesh.Bhurke@Konsultera.in">
+<span style="font-family:&quot;Calibri&quot;,sans-serif; text-decoration:none">@Rupesh Bhurke</span></a>
+<a id="OWAAM11A70B44A91B4B5CA3E580082396F619" href="mailto:Sahil.parekh@konsultera.in">
+<span style="font-family:&quot;Calibri&quot;,sans-serif; text-decoration:none">@Sahil Parekh</span></a>
+<a id="OWAAMC2CDB9883D0940979B93FF1A412B4A2C" href="mailto:Santosh.G@konsultera.in">
+<span style="font-family:&quot;Calibri&quot;,sans-serif; text-decoration:none">@Santosh Gopalakrishnan</span></a>
+<a id="OWAAM2B5010B5A91341A8B747E24031845652" href="mailto:sajeev.kutty@konsultera.in">
+<span style="font-family:&quot;Calibri&quot;,sans-serif; text-decoration:none">@Sajeev Kutty</span></a>
+<a id="OWAAM6144B352B2E147D89D6E7C31F66D0CC2" href="mailto:saurav.singhania@integreon.com">
+<span style="font-family:&quot;Calibri&quot;,sans-serif; text-decoration:none">@Saurav Singhania</span></a>
+<a id="OWAAM9F3A7BBBE38349AAB2117E4091A1CAB6" href="mailto:ilab.support@integreon.com">
+<span style="font-family:&quot;Calibri&quot;,sans-serif; text-decoration:none">@ilab.support@integreon.com</span></a>
+<a id="OWAAM87A0EC57C340472798A7CAA307670A58" href="mailto:ananta.sarathi@integreon.com">
+<span style="font-family:&quot;Calibri&quot;,sans-serif; text-decoration:none">@Ananta Sarathi</span></a></span></p>
+<p class="x_MsoNormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span></p>
+<p class="x_MsoNormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif">Email Subject from “Unable to use ML features in AutoBot” to “Autobot | External | Support | Unable to use ML features in AutoBot”</span></p>
+<p class="x_MsoNormal">&nbsp;</p>
+<div>
+<div style="border:none; border-top:solid #E1E1E1 1.0pt; padding:3.0pt 0cm 0cm 0cm">
+<p class="x_MsoNormal"><b><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif">From:</span></b><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif"> Sajjan Choudhary &lt;<a href="mailto:Sajjan.Choudhary@integreon.com">Sajjan.Choudhary@integreon.com</a>&gt;
+<br>
+<b>Sent:</b> Wednesday, June 11, 2025 2:45 PM<br>
+<b>To:</b> Sachin Joshi &lt;<a href="mailto:Sachin.Joshi@Konsultera.in">Sachin.Joshi@Konsultera.in</a>&gt;<br>
+<b>Cc:</b> Tanvi Doshi &lt;<a href="mailto:tanvi.doshi@Konsultera.in">tanvi.doshi@Konsultera.in</a>&gt;; Suhas Kate &lt;<a href="mailto:Suhas.Kate@Konsultera.in">Suhas.Kate@Konsultera.in</a>&gt;<br>
+<b>Subject:</b> FW: Unable to use ML features in AutoBot<br>
+<b>Importance:</b> High</span></p>
+</div>
+</div>
+<p class="x_MsoNormal">&nbsp;</p>
+<p class="x_MsoNormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif">Hi Sachin,</span></p>
+<p class="x_MsoNormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span></p>
+<p class="x_MsoNormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif">I hope you are doing well. I'm writing to request your assistance in restarting the Docker on the ML server (10.91.67.103) for AutoBot. It appears that the Docker was stopped
+ during the graphics driver update task last night, and since then, the ML features have been unavailable to the team on AutoBot.</span></p>
+<p class="x_MsoNormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span></p>
+<p class="x_MsoNormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif">Could we possibly perform this task together? This way, we can ensure that the issue is addressed internally if it occurs again in the future. Your guidance and support
+ in this matter would be greatly appreciated.</span></p>
+<p class="x_MsoNormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span></p>
+<p class="x_MsoNormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif">Thank you for your help.</span></p>
+<p class="x_MsoNormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span></p>
+<p class="x_MsoNormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif">Regards,</span></p>
+<p class="x_MsoNormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif">Sajjan</span></p>
+<p class="x_MsoNormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span></p>
+<div>
+<div style="border:none; border-top:solid #E1E1E1 1.0pt; padding:3.0pt 0cm 0cm 0cm">
+<p class="x_MsoNormal"><b><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif">From:</span></b><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif"> Saurav Khan &lt;<a href="mailto:Saurav.Khan@integreon.com">Saurav.Khan@integreon.com</a>&gt;
+<br>
+<b>Sent:</b> Wednesday, June 11, 2025 2:23 PM<br>
+<b>To:</b> iLab Support &lt;<a href="mailto:ilab.support@integreon.com">ilab.support@integreon.com</a>&gt;<br>
+<b>Cc:</b> Ananta Sarathi &lt;<a href="mailto:Ananta.Sarathi@integreon.com">Ananta.Sarathi@integreon.com</a>&gt;; Saravanakumar Chandran &lt;<a href="mailto:saravana.chandr@integreon.com">saravana.chandr@integreon.com</a>&gt;; Emerson Bogñalbal &lt;<a href="mailto:Emerson.Bognalbal@integreon.com">Emerson.Bognalbal@integreon.com</a>&gt;;
+ Rupesh Bhurke &lt;<a href="mailto:rupesh.bhurke@konsultera.in">rupesh.bhurke@konsultera.in</a>&gt;; Tanvi Doshi &lt;<a href="mailto:tanvi.doshi@konsultera.in">tanvi.doshi@konsultera.in</a>&gt;; Sajjan Choudhary &lt;<a href="mailto:Sajjan.Choudhary@integreon.com">Sajjan.Choudhary@integreon.com</a>&gt;;
+ Saurav Singhania &lt;<a href="mailto:saurav.singhania@integreon.com">saurav.singhania@integreon.com</a>&gt;<br>
+<b>Subject:</b> RE: Unable to use ML features in AutoBot<br>
+<b>Importance:</b> High</span></p>
+</div>
+</div>
+<p class="x_MsoNormal">&nbsp;</p>
+<p class="x_MsoNormal"><span lang="EN-IN" style="font-size:11.0pt">Hi Team,</span></p>
+<p class="x_MsoNormal"><span lang="EN-IN" style="font-size:11.0pt">&nbsp;</span></p>
+<p class="x_MsoNormal"><span lang="EN-IN" style="font-size:11.0pt">I have attached all the snapshots of errors we get while executing ML features.</span></p>
+<p class="x_MsoNormal"><span lang="EN-IN" style="font-size:11.0pt">&nbsp;</span></p>
+<p class="x_MsoNormal"><span lang="EN-IN" style="font-size:11.0pt">Can we please fix this asap and share what has caused this issue. The logs are not generating due to which we don’t see any usage or real-time flagging of projects in our workflow system.</span></p>
+<p class="x_MsoNormal"><span lang="EN-IN" style="font-size:11.0pt">&nbsp;</span></p>
+<div>
+<p class="x_MsoNormal"><span lang="EN-IN" style="font-size:11.0pt">&nbsp;</span></p>
+<p class="x_MsoNormal"><span lang="EN-IN" style="font-size:11.0pt">Regards,</span></p>
+<p class="x_MsoNormal"><span lang="EN-IN" style="font-size:11.0pt">Saurav</span></p>
+<p class="x_MsoNormal"><span lang="EN-IN" style="font-size:11.0pt">&nbsp;</span></p>
+<table class="x_MsoNormalTable" border="0" cellspacing="0" cellpadding="0" width="860" style="width:645.0pt; background:white">
+<tbody>
+<tr>
+<td width="190" style="width:142.5pt; padding:0cm 0cm 0cm 0cm">
+<p class="x_MsoNormal"><span style="font-size:13.5pt; font-family:&quot;Times New Roman&quot;,serif; color:black"><img border="0" width="190" height="140" id="x_Picture_x0020_1" style="width:1.9791in; height:1.4583in" data-outlook-trace="F:1|T:1" src="cid:image001.png@01DBDAEB.D5C72710"></span></p>
+</td>
+<td style="padding:7.5pt 22.5pt 7.5pt 22.5pt">
+<table class="x_MsoNormalTable" border="0" cellspacing="0" cellpadding="0" width="100%" style="width:100.0%">
+<tbody>
+<tr>
+<td style="padding:0cm 0cm 0cm 0cm">
+<table class="x_MsoNormalTable" border="0" cellspacing="0" cellpadding="0" width="100%" style="width:100.0%">
+<tbody>
+<tr>
+<td style="padding:0cm 0cm 0cm 0cm">
+<p class="x_MsoNormal"><b><span style="font-size:16.0pt; font-family:&quot;Arial&quot;,sans-serif; color:#4DC2BF">Saurav Khan</span></b><span style="font-size:11.0pt">&nbsp;&nbsp;</span><b><span style="font-size:10.0pt; font-family:&quot;Arial&quot;,sans-serif; color:silver">(He / Him /
+ His)</span></b></p>
+</td>
+</tr>
+<tr>
+<td style="padding:0cm 0cm 0cm 0cm">
+<p class="x_MsoNormal"><span style="font-size:11.0pt; font-family:&quot;Arial&quot;,sans-serif; color:black">Assistant Manager</span></p>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<td colspan="2" style="padding:0cm 0cm 0cm 0cm">
+<table class="x_MsoNormalTable" border="0" cellspacing="0" cellpadding="0" width="100%" style="width:100.0%">
+<tbody>
+<tr>
+<td style="padding:7.5pt 0cm 7.5pt 0cm">
+<table class="x_MsoNormalTable" border="0" cellspacing="0" cellpadding="0" width="100%" style="width:100.0%">
+<tbody>
+<tr style="height:15.0pt">
+<td style="padding:0cm 0cm 0cm 0cm; height:15.0pt">
+<p class="x_MsoNormal"><b><span style="font-size:9.0pt; font-family:&quot;Arial&quot;,sans-serif; color:#4DC2BF">Mobile:</span></b><span style="font-size:10.5pt; font-family:&quot;Arial&quot;,sans-serif">&nbsp;<span style="color:black">+91 7021351310</span></span></p>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+<td style="padding:7.5pt 0cm 7.5pt 0cm">
+<table class="x_MsoNormalTable" border="0" cellspacing="0" cellpadding="0" width="100%" style="width:100.0%">
+<tbody>
+<tr style="height:15.0pt">
+<td style="padding:0cm 0cm 0cm 0cm; height:15.0pt">
+<p class="x_MsoNormal"><b><span style="font-size:9.0pt; font-family:&quot;Arial&quot;,sans-serif; color:#4DC2BF">Email:</span></b><span style="font-size:10.5pt; font-family:&quot;Arial&quot;,sans-serif">&nbsp;<span style="color:black"><a href="mailto:saurav.khan@integreon.com">saurav.khan@integreon.com</a>
+</span></span></p>
+</td>
+</tr>
+<tr style="height:15.0pt">
+<td style="padding:0cm 0cm 0cm 0cm; height:15.0pt">
+<p class="x_MsoNormal"><b><span style="font-size:9.0pt; font-family:&quot;Arial&quot;,sans-serif; color:#4DC2BF">Web:</span></b><span style="font-size:10.5pt; font-family:&quot;Arial&quot;,sans-serif">&nbsp;<span style="color:black"><a href="http://www.integreon.com/">www.integreon.com</a>
+</span></span></p>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<td style="padding:0cm 0cm 0cm 0cm">
+<table class="x_MsoNormalTable" border="0" cellspacing="0" cellpadding="0" width="100%" style="width:100.0%">
+<tbody>
+<tr style="height:15.0pt">
+<td style="padding:0cm 0cm 0cm 0cm; height:15.0pt">
+<p class="x_MsoNormal"><span style="font-size:13.5pt; font-family:&quot;Arial&quot;,sans-serif; color:black">Do more.&nbsp;<b>Do it better.</b></span></p>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+<td style="padding:0cm 0cm 0cm 0cm"></td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="x_MsoNormal"><span lang="EN-IN" style="font-size:11.0pt">&nbsp;</span></p>
+</div>
+<p class="x_MsoNormal"><span lang="EN-IN" style="font-size:11.0pt">&nbsp;</span></p>
+<div>
+<div style="border:none; border-top:solid #E1E1E1 1.0pt; padding:3.0pt 0cm 0cm 0cm">
+<p class="x_MsoNormal"><b><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif">From:</span></b><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif"> iLab Support &lt;<a href="mailto:ilab.support@integreon.com">ilab.support@integreon.com</a>&gt;
+<br>
+<b>Sent:</b> 11 June 2025 11:29<br>
+<b>To:</b> Saurav Khan &lt;<a href="mailto:Saurav.Khan@integreon.com">Saurav.Khan@integreon.com</a>&gt;<br>
+<b>Cc:</b> Ananta Sarathi &lt;<a href="mailto:Ananta.Sarathi@integreon.com">Ananta.Sarathi@integreon.com</a>&gt;; Saravanakumar Chandran &lt;<a href="mailto:saravana.chandr@integreon.com">saravana.chandr@integreon.com</a>&gt;; Emerson Bogñalbal &lt;<a href="mailto:Emerson.Bognalbal@integreon.com">Emerson.Bognalbal@integreon.com</a>&gt;;
+ Rupesh Bhurke &lt;<a href="mailto:rupesh.bhurke@konsultera.in">rupesh.bhurke@konsultera.in</a>&gt;; Tanvi Doshi &lt;<a href="mailto:tanvi.doshi@konsultera.in">tanvi.doshi@konsultera.in</a>&gt;; Sajjan Choudhary &lt;<a href="mailto:Sajjan.Choudhary@integreon.com">Sajjan.Choudhary@integreon.com</a>&gt;;
+ Saurav Singhania &lt;<a href="mailto:saurav.singhania@integreon.com">saurav.singhania@integreon.com</a>&gt;<br>
+<b>Subject:</b> RE: Unable to use ML features in AutoBot</span></p>
+</div>
+</div>
+<p class="x_MsoNormal"><span lang="EN-IN">&nbsp;</span></p>
+<p class="x_MsoNormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif">Hi Saurav,</span></p>
+<p class="x_MsoNormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span></p>
+<p class="x_MsoNormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif">I hope this message finds you well. Thank you for reaching out regarding the issue with the ML features in AutoBot. To help us investigate further, could you please provide
+ some additional details?</span></p>
+<p class="x_MsoNormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span></p>
+<p class="x_MsoNormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif">Specifically, are you encountering any error messages when trying to use the ML features such as Enhance, Segment, Face crop, etc.? If so, could you kindly share those error
+ messages with us? This information will help us to pinpoint the cause of the problem and work towards a solution more efficiently.</span></p>
+<p class="x_MsoNormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span></p>
+<p class="x_MsoNormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif">Looking forward to your response.</span></p>
+<p class="x_MsoNormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span></p>
+<p class="x_MsoNormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif">Regards,</span></p>
+<p class="x_MsoNormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif">Sajjan</span></p>
+<p class="x_MsoNormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif">iLab Support</span></p>
+<p class="x_MsoNormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span></p>
+<div>
+<div style="border:none; border-top:solid #E1E1E1 1.0pt; padding:3.0pt 0cm 0cm 0cm">
+<p class="x_MsoNormal"><b><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif">From:</span></b><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif"> Sajjan Choudhary &lt;<a href="mailto:Sajjan.Choudhary@integreon.com">Sajjan.Choudhary@integreon.com</a>&gt;
+<br>
+<b>Sent:</b> Wednesday, June 11, 2025 11:19 AM<br>
+<b>To:</b> Saurav Singhania &lt;<a href="mailto:saurav.singhania@integreon.com">saurav.singhania@integreon.com</a>&gt;; Saurav Khan &lt;<a href="mailto:Saurav.Khan@integreon.com">Saurav.Khan@integreon.com</a>&gt;; Rupesh Bhurke &lt;<a href="mailto:rupesh.bhurke@konsultera.in">rupesh.bhurke@konsultera.in</a>&gt;;
+ Tanvi Doshi &lt;<a href="mailto:tanvi.doshi@konsultera.in">tanvi.doshi@konsultera.in</a>&gt;; iLab Support &lt;<a href="mailto:ilab.support@integreon.com">ilab.support@integreon.com</a>&gt;<br>
+<b>Cc:</b> Ananta Sarathi &lt;<a href="mailto:Ananta.Sarathi@integreon.com">Ananta.Sarathi@integreon.com</a>&gt;; Saravanakumar Chandran &lt;<a href="mailto:saravana.chandr@integreon.com">saravana.chandr@integreon.com</a>&gt;; Emerson Bogñalbal &lt;<a href="mailto:Emerson.Bognalbal@integreon.com">Emerson.Bognalbal@integreon.com</a>&gt;<br>
+<b>Subject:</b> RE: Unable to use ML features in AutoBot</span></p>
+</div>
+</div>
+<p class="x_MsoNormal">&nbsp;</p>
+<p class="x_MsoNormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif">+ Ilab support</span></p>
+<p class="x_MsoNormal"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif">&nbsp;</span></p>
+<div>
+<div style="border:none; border-top:solid #E1E1E1 1.0pt; padding:3.0pt 0cm 0cm 0cm">
+<p class="x_MsoNormal"><b><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif">From:</span></b><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif"> Saurav Singhania &lt;<a href="mailto:saurav.singhania@integreon.com">saurav.singhania@integreon.com</a>&gt;
+<br>
+<b>Sent:</b> Wednesday, June 11, 2025 9:50 AM<br>
+<b>To:</b> Saurav Khan &lt;<a href="mailto:Saurav.Khan@integreon.com">Saurav.Khan@integreon.com</a>&gt;; Rupesh Bhurke &lt;<a href="mailto:rupesh.bhurke@konsultera.in">rupesh.bhurke@konsultera.in</a>&gt;; Tanvi Doshi &lt;<a href="mailto:tanvi.doshi@konsultera.in">tanvi.doshi@konsultera.in</a>&gt;;
+ Sajjan Choudhary &lt;<a href="mailto:Sajjan.Choudhary@integreon.com">Sajjan.Choudhary@integreon.com</a>&gt;<br>
+<b>Cc:</b> Ananta Sarathi &lt;<a href="mailto:Ananta.Sarathi@integreon.com">Ananta.Sarathi@integreon.com</a>&gt;; Saravanakumar Chandran &lt;<a href="mailto:saravana.chandr@integreon.com">saravana.chandr@integreon.com</a>&gt;; Emerson Bogñalbal &lt;<a href="mailto:Emerson.Bognalbal@integreon.com">Emerson.Bognalbal@integreon.com</a>&gt;<br>
+<b>Subject:</b> Re: Unable to use ML features in AutoBot</span></p>
+</div>
+</div>
+<p class="x_MsoNormal">&nbsp;</p>
+<div>
+<p class="x_MsoNormal">++ Sajjan</p>
+</div>
+<div id="x_ms-outlook-mobile-body-separator-line">
+<p class="x_MsoNormal">&nbsp;</p>
+</div>
+<div id="x_ms-outlook-mobile-signature">
+<div>
+<p class="x_MsoNormal">Regards,</p>
+</div>
+<div>
+<p class="x_MsoNormal">Saurav</p>
+</div>
+</div>
+<div class="x_MsoNormal" align="center" style="text-align:center">
+<hr size="1" width="98%" align="center">
+</div>
+<div id="x_divRplyFwdMsg">
+<p class="x_MsoNormal"><b><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif; color:black">From:</span></b><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif; color:black"> Saurav Khan &lt;<a href="mailto:Saurav.Khan@integreon.com">Saurav.Khan@integreon.com</a>&gt;<br>
+<b>Sent:</b> Wednesday, June 11, 2025 2:50:57 AM<br>
+<b>To:</b> Rupesh Bhurke &lt;<a href="mailto:rupesh.bhurke@konsultera.in">rupesh.bhurke@konsultera.in</a>&gt;; Tanvi Doshi &lt;<a href="mailto:tanvi.doshi@konsultera.in">tanvi.doshi@konsultera.in</a>&gt;<br>
+<b>Cc:</b> Ananta Sarathi &lt;<a href="mailto:Ananta.Sarathi@integreon.com">Ananta.Sarathi@integreon.com</a>&gt;; Saurav Singhania &lt;<a href="mailto:saurav.singhania@integreon.com">saurav.singhania@integreon.com</a>&gt;; Saravanakumar Chandran &lt;<a href="mailto:saravana.chandr@integreon.com">saravana.chandr@integreon.com</a>&gt;;
+ Emerson Bogñalbal &lt;<a href="mailto:Emerson.Bognalbal@integreon.com">Emerson.Bognalbal@integreon.com</a>&gt;<br>
+<b>Subject:</b> Unable to use ML features in AutoBot</span> </p>
+<div>
+<p class="x_MsoNormal">&nbsp;</p>
+</div>
+</div>
+<div>
+<div>
+<p class="x_MsoNormal">Hi Rupesh,</p>
+</div>
+<div>
+<p class="x_MsoNormal">&nbsp;</p>
+</div>
+<div>
+<p class="x_MsoNormal">We are unable to use any ML features such as Enhance, Segment, Face crop, etc.</p>
+</div>
+<div>
+<p class="x_MsoNormal">&nbsp;</p>
+</div>
+<div>
+<p class="x_MsoNormal">INT IT team confirmed that ML server is up, but can u check and let us know on the cause.</p>
+</div>
+<div>
+<p class="x_MsoNormal">&nbsp;</p>
+</div>
+<div>
+<p class="x_MsoNormal">INT IT team also confirmed that there was no driver upgrades happened from their end and to fix the driver compatibility issue, they restarted the ML server as well.</p>
+</div>
+<div id="x_x_ms-outlook-mobile-body-separator-line">
+<p class="x_MsoNormal">&nbsp;</p>
+<div>
+<p class="x_MsoNormal">It would be great if you can fix this as soon as possible. Thank you.</p>
+</div>
+<div>
+<p class="x_MsoNormal">&nbsp;</p>
+</div>
+</div>
+<div id="x_x_ms-outlook-mobile-signature">
+<p style="margin:0cm"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif; color:black; background:white">Regards,</span></p>
+<p style="margin:0cm"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif; color:black; background:white">Saurav</span></p>
+<p style="margin:0cm"><span style="font-size:10.0pt; font-family:&quot;Calibri&quot;,sans-serif; color:#003366; background:white">_____________________________________________</span></p>
+<p style="margin:0cm"><b><span style="font-family:&quot;Calibri Light&quot;,sans-serif; color:#1F3864">Saurav Khan</span></b></p>
+<p style="margin:0cm; background:white"><span style="font-size:11.0pt; font-family:&quot;Calibri Light&quot;,sans-serif; color:#1F3864">Assistant Manager</span></p>
+<p style="margin:0cm"><b><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif; color:#1F3864">&nbsp;</span></b></p>
+<p style="margin:0cm"><b><span style="font-size:11.0pt; font-family:&quot;Calibri Light&quot;,sans-serif; color:#1F3864">Integreon</span></b></p>
+<p style="margin:0cm"><span style="font-size:10.0pt; font-family:&quot;Calibri&quot;,sans-serif; color:#1F3864">602, 6<sup>th</sup>&nbsp;Floor, IT Building 03, Nesco IT Park</span></p>
+<p style="margin:0cm"><span style="font-size:10.0pt; font-family:&quot;Calibri&quot;,sans-serif; color:#1F3864">Nesco Complex, Western Express Highway</span></p>
+<p style="margin:0cm"><span style="font-size:10.0pt; font-family:&quot;Calibri&quot;,sans-serif; color:#1F3864">Goregaon East, Mumbai 400 063, India</span></p>
+<p style="margin:0cm"><span style="font-size:10.0pt; font-family:&quot;Calibri&quot;,sans-serif; color:#1F3864">India Mobile: +91-702-135-1310</span></p>
+<p style="margin:0cm"><u><span style="font-size:10.0pt; font-family:&quot;Calibri&quot;,sans-serif; color:#1F3864"><a href="http://www.integreon.com/">www.integreon.com</a></span></u></p>
+<p style="margin:0cm"><span style="font-size:11.0pt; font-family:&quot;Calibri&quot;,sans-serif; color:#1F3864">&nbsp;</span></p>
+<p style="margin:0cm"><span style="font-size:9.0pt; font-family:&quot;Calibri&quot;,sans-serif; color:#1F3864">IMPORTANT NOTICE: This email may contain material that is confidential, privileged and/or attorney work product for the sole use of the intended recipient.
+ Any review, reliance or distribution by others or forwarding without express permission is strictly prohibited. If you are not the intended recipient, please contact the sender and delete all copies.</span></p>
+<p style="margin:0cm"><span style="font-size:9.0pt; font-family:&quot;Calibri&quot;,sans-serif; color:#1F3864">&nbsp;</span></p>
+<p style="margin:0cm"><b><span style="font-size:10.0pt; font-family:&quot;Calibri&quot;,sans-serif; color:#00B050">Go green, use less paper. Please think before you print.</span></b></p>
+<div>
+<table class="x_MsoNormalTable" border="0" cellspacing="3" cellpadding="0" width="860" style="width:645.0pt; background:white">
+<tbody>
+<tr style="height:38.2pt">
+<td width="190" style="width:142.5pt; padding:0cm 0cm 0cm 0cm; height:38.2pt"></td>
+<td width="674" style="width:505.25pt; padding:7.5pt 22.5pt 7.5pt 22.5pt; height:38.2pt">
+<table class="x_MsoNormalTable" border="0" cellspacing="3" cellpadding="0" width="610" style="width:457.5pt">
+<tbody>
+<tr>
+<td width="304" style="width:228.05pt; padding:0cm 0cm 0cm 0cm"></td>
+<td width="303" style="width:227.25pt; padding:0cm 0cm 0cm 0cm">
+<p class="x_MsoNormal">&nbsp;</p>
+</td>
+</tr>
+<tr style="height:17.75pt">
+<td width="610" colspan="2" style="width:457.5pt; padding:0cm 0cm 0cm 0cm; height:17.75pt">
+<table class="x_MsoNormalTable" border="0" cellspacing="3" cellpadding="0" width="610" style="width:457.5pt">
+<tbody>
+<tr style="height:15.0pt">
+<td width="302" style="width:226.7pt; padding:7.5pt 0cm 7.5pt 0cm; height:15.0pt">
+</td>
+<td width="302" style="width:226.7pt; padding:7.5pt 0cm 7.5pt 0cm; height:15.0pt">
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<td width="304" style="width:228.05pt; padding:0cm 0cm 0cm 0cm"></td>
+<td width="306" style="width:229.45pt; padding:0cm 0cm 0cm 0cm"></td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="x_MsoNormal">&nbsp;</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>
+
+    </div>
+</body>
+</html>

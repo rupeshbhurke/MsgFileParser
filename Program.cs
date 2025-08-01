@@ -19,128 +19,87 @@ namespace MsgFileParser
             if (args.Length == 0)
             {
                 Console.WriteLine("ERROR: INVALID_USAGE - No input file specified");
-                Console.WriteLine("USAGE: MsgFileParser <path_to_msg_file> [output_file_path]");
+                Console.WriteLine("USAGE: MsgFileParser <path_to_msg_file> [output_file_path] [--text|--html]");
                 Console.WriteLine("INFO: If output_file_path is not specified, a .txt file will be created in the same directory as the MSG file.");
-                Console.WriteLine("INFO: You can specify either a complete file path or just a directory (ending with / or \\).");
-                Environment.Exit(1);
+                Console.WriteLine("INFO: You can specify either a complete file path or just a directory (ending with / or \"");
+                Console.WriteLine("INFO: You can provide --text or --html in any position.");
+                Environment.Exit((int)ExitCode.InvalidUsage);
             }
 
-            string msgFilePath = args[0];
-            string outputPath;
-            if (args.Length > 1)
-            {
-                outputPath = args[1];
-                if (Directory.Exists(args[1]) || args[1].EndsWith("/") || args[1].EndsWith("\\"))
-                {
-                    string fileName = Path.GetFileNameWithoutExtension(msgFilePath);
-                    outputPath = Path.Combine(args[1].TrimEnd('/', '\\'), $"{fileName}.txt");
-                }
-            }
-            else
-            {
-                string fileName = Path.GetFileNameWithoutExtension(msgFilePath);
-                string directory = Path.GetDirectoryName(msgFilePath) ?? ".";
-                outputPath = Path.Combine(directory, $"{fileName}.txt");
-            }
-
+            ParserArguments parsedArgs;
             try
             {
-                // ...existing validation code...
-                if (string.IsNullOrWhiteSpace(msgFilePath))
-                {
-                    Console.WriteLine("ERROR: INVALID_INPUT - MSG file path cannot be empty");
-                    Environment.Exit(2);
-                }
-                if (!File.Exists(msgFilePath))
-                {
-                    Console.WriteLine($"ERROR: FILE_NOT_FOUND - {msgFilePath}");
-                    Environment.Exit(3);
-                }
-                string fileExtension = Path.GetExtension(msgFilePath).ToLowerInvariant();
-                if (fileExtension != ".msg")
-                {
-                    Console.WriteLine($"WARNING: INVALID_EXTENSION - File has {fileExtension} extension, expected .msg");
-                    Console.WriteLine("INFO: Attempting to process anyway...");
-                }
-                try
-                {
-                    using (var stream = File.OpenRead(msgFilePath)) { }
-                }
-                catch (UnauthorizedAccessException)
-                {
-                    Console.WriteLine($"ERROR: ACCESS_DENIED - Cannot read file: {msgFilePath}");
-                    Environment.Exit(4);
-                }
-                catch (IOException ex)
-                {
-                    Console.WriteLine($"ERROR: IO_ERROR - Cannot access file: {ex.Message}");
-                    Environment.Exit(5);
-                }
-                var fileInfo = new FileInfo(msgFilePath);
-                if (fileInfo.Length > 50 * 1024 * 1024)
-                {
-                    Console.WriteLine($"WARNING: LARGE_FILE - Size: {fileInfo.Length / (1024 * 1024)}MB, processing may take longer");
-                }
-                if (string.IsNullOrWhiteSpace(outputPath))
-                {
-                    Console.WriteLine("ERROR: INVALID_OUTPUT - Output path cannot be empty");
-                    Environment.Exit(6);
-                }
-                string? outputDir = Path.GetDirectoryName(outputPath);
-                if (!string.IsNullOrEmpty(outputDir) && !Directory.Exists(outputDir))
-                {
-                    Console.WriteLine($"ERROR: DIRECTORY_NOT_FOUND - Output directory does not exist: {outputDir}");
-                    Environment.Exit(7);
-                }
-                if (File.Exists(outputPath))
-                {
-                    Console.WriteLine($"WARNING: FILE_EXISTS - Output file will be overwritten: {outputPath}");
-                }
-                try
-                {
-                    string testFile = Path.Combine(outputDir ?? ".", "temp_write_test.tmp");
-                    File.WriteAllText(testFile, "test");
-                    File.Delete(testFile);
-                }
-                catch (UnauthorizedAccessException)
-                {
-                    Console.WriteLine($"ERROR: WRITE_ACCESS_DENIED - No write permission for directory: {outputDir ?? "."}");
-                    Environment.Exit(8);
-                }
-                catch (IOException ex)
-                {
-                    Console.WriteLine($"ERROR: WRITE_IO_ERROR - Cannot write to output directory: {ex.Message}");
-                    Environment.Exit(9);
-                }
+                parsedArgs = new ParserArguments(args);
+            }
+            catch (ArgumentException ex)
+            {
+                Console.WriteLine($"ERROR: INVALID_USAGE - {ex.Message}");
+                Console.WriteLine("USAGE: MsgFileParser <path_to_msg_file> [output_file_path] [--text|--html]");
+                Environment.Exit((int)ExitCode.InvalidUsage);
+                return;
+            }
 
-                // Refactored: Use MsgFileParser and MsgExportService
+            string msgFilePath = parsedArgs.MsgFilePath;
+            string outputPath = parsedArgs.OutputPath;
+            string exportFormat = parsedArgs.ExportFormat;
+
+            var validator = new FileValidator();
+            try
+            {
+                validator.ValidateInputFile(msgFilePath);
+                validator.ValidateOutputPath(outputPath);
+
                 var parser = new MsgFileParser();
                 var exportService = new MsgExportService();
                 MsgFileInfo info = parser.Parse(msgFilePath);
-                exportService.ExportToText(info, outputPath);
+                if (exportFormat == "html")
+                {
+                    exportService.ExportToHtml(info, outputPath);
+                }
+                else
+                {
+                    exportService.ExportToText(info, outputPath);
+                }
                 Console.WriteLine($"SUCCESS: Processing completed - Output: {outputPath}");
-                Environment.Exit(0);
+                Environment.Exit((int)ExitCode.Success);
             }
             catch (ArgumentException ex)
             {
                 Console.WriteLine($"ERROR: INVALID_PATH - {ex.Message}");
-                Environment.Exit(10);
+                Environment.Exit((int)ExitCode.InvalidPath);
+            }
+            catch (FileNotFoundException ex)
+            {
+                Console.WriteLine($"ERROR: FILE_NOT_FOUND - {ex.Message}");
+                Environment.Exit((int)ExitCode.FileNotFound);
+            }
+            catch (DirectoryNotFoundException ex)
+            {
+                Console.WriteLine($"ERROR: DIRECTORY_NOT_FOUND - {ex.Message}");
+                Environment.Exit((int)ExitCode.DirectoryNotFound);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                Console.WriteLine($"ERROR: ACCESS_DENIED - {ex.Message}");
+                Environment.Exit((int)ExitCode.AccessDenied);
+            }
+            catch (IOException ex)
+            {
+                Console.WriteLine($"ERROR: IO_ERROR - {ex.Message}");
+                Environment.Exit((int)ExitCode.IoError);
             }
             catch (NotSupportedException ex)
             {
                 Console.WriteLine($"ERROR: NOT_SUPPORTED - {ex.Message}");
-                Environment.Exit(11);
+                Environment.Exit((int)ExitCode.NotSupported);
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"ERROR: UNEXPECTED - {ex.Message}");
-                Environment.Exit(99);
+                Environment.Exit((int)ExitCode.Unexpected);
             }
         }
 
-        static void ProcessMsgFile(string msgFilePath, string outputPath)
-        {
-            // ...removed, now handled by MsgFileParser and MsgExportService...
-        }
+        // Removed legacy ProcessMsgFile method; all logic is now refactored.
     }
 }

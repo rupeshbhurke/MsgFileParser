@@ -7,6 +7,11 @@ Refactor the codebase for maintainability and extensibility, and add support for
 ---
 
 ## Step-by-Step Plan
+### 7. Modularize Argument Parsing and Validation
+- Refactor argument parsing into a dedicated class (`ParserArguments`).
+- Refactor input/output validation into a dedicated class (`FileValidator`).
+- Remove legacy methods from Program.cs.
+- Ensure Program.cs only orchestrates, not implements.
 
 ### 1. Design Classes
 - **MsgFileParser**: Handles parsing and validation of MSG files.
@@ -42,12 +47,13 @@ Refactor the codebase for maintainability and extensibility, and add support for
 
 | Step | Task | Status |
 |------|------|--------|
-| 1 | Design classes & structure | ⬜ Not started |
-| 2 | Refactor current implementation | ⬜ Not started |
-| 3 | Test refactored code | ⬜ Not started |
-| 4 | Add HTML export functionality | ⬜ Not started |
-| 5 | Update CLI for format selection | ⬜ Not started |
-| 6 | Update tests & documentation | ⬜ Not started |
+| 1 | Design classes & structure | ✅ Complete |
+| 2 | Refactor current implementation | ✅ Complete |
+| 3 | Test refactored code | ✅ Complete |
+| 4 | Add HTML export functionality | ✅ Complete |
+| 5 | Update CLI for format selection | ✅ Complete |
+| 6 | Update tests & documentation | ✅ Complete |
+| 7 | Modularize argument parsing & validation | ✅ Complete |
 
 ---
 

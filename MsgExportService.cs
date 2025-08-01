@@ -6,7 +6,14 @@ namespace MsgFileParser
         {
             var content = new System.Text.StringBuilder();
             content.AppendLine($"Subject: {info.Subject}");
-            content.AppendLine($"From: {info.Sender}");
+            if (!string.IsNullOrEmpty(info.SenderDisplayName) && !string.IsNullOrEmpty(info.SenderEmail))
+                content.AppendLine($"From: {info.SenderDisplayName} <{info.SenderEmail}>");
+            else if (!string.IsNullOrEmpty(info.SenderEmail))
+                content.AppendLine($"From: <{info.SenderEmail}>");
+            else if (!string.IsNullOrEmpty(info.SenderDisplayName))
+                content.AppendLine($"From: {info.SenderDisplayName}");
+            else
+                content.AppendLine("From: [Unknown]");
             content.AppendLine($"Date: {info.Date}");
             if (info.Recipients.Count > 0)
             {
@@ -39,31 +46,47 @@ namespace MsgFileParser
                 var body = !string.IsNullOrEmpty(info.BodyText) ? info.BodyText : (!string.IsNullOrEmpty(info.BodyRtf) ? info.BodyRtf : "[No body content found]");
                 htmlBody = $"<pre>{System.Net.WebUtility.HtmlEncode(body)}</pre>";
             }
-            string recipientsHtml = info.Recipients.Count > 0
-                ? string.Join("<br>", info.Recipients.ConvertAll(r => $"- {System.Net.WebUtility.HtmlEncode(r.Email)} ({System.Net.WebUtility.HtmlEncode(r.DisplayName)})"))
-                : "[None found]";
+
+            // Build classic email header block
+            string from = "";
+            if (!string.IsNullOrEmpty(info.SenderDisplayName) && !string.IsNullOrEmpty(info.SenderEmail))
+                from = $"{System.Net.WebUtility.HtmlEncode(info.SenderDisplayName)} &lt;{System.Net.WebUtility.HtmlEncode(info.SenderEmail)}&gt;";
+            else if (!string.IsNullOrEmpty(info.SenderEmail))
+                from = $"&lt;{System.Net.WebUtility.HtmlEncode(info.SenderEmail)}&gt;";
+            else if (!string.IsNullOrEmpty(info.SenderDisplayName))
+                from = System.Net.WebUtility.HtmlEncode(info.SenderDisplayName);
+            string sent = System.Net.WebUtility.HtmlEncode(info.Date ?? "");
+            string subject = System.Net.WebUtility.HtmlEncode(info.Subject ?? "MSG Email");
+
+            // To, Cc fields (fallback: list all recipients in To, leave Cc blank)
+            string to = info.Recipients != null && info.Recipients.Count > 0
+                ? string.Join("; ", info.Recipients.ConvertAll(r => $"{System.Net.WebUtility.HtmlEncode(r.DisplayName)} &lt;{System.Net.WebUtility.HtmlEncode(r.Email)}&gt;"))
+                : "";
+            string cc = ""; // No Cc info available in MsgFileInfo
+
+            string headerBlock = $@"
+<div class='email-header' style='background:#f8f8f8; border:1px solid #ddd; padding:1em; margin-bottom:1em;'>
+    <div><strong>From:</strong> {from}</div>
+    <div><strong>Sent:</strong> {sent}</div>
+    {(string.IsNullOrEmpty(to) ? "" : $"<div><strong>To:</strong> {to}</div>")}
+    {(string.IsNullOrEmpty(cc) ? "" : $"<div><strong>Cc:</strong> {cc}</div>")}
+    <div><strong>Subject:</strong> {subject}</div>
+</div>
+";
+
             string html = $@"<!DOCTYPE html>
 <html>
 <head>
     <meta charset='utf-8'>
-    <title>{System.Net.WebUtility.HtmlEncode(info.Subject ?? "MSG Email")}</title>
+    <title>{subject}</title>
     <style>
         body {{ font-family: Arial, sans-serif; margin: 2em; }}
-        .meta {{ margin-bottom: 1em; }}
-        .recipients {{ margin-bottom: 1em; }}
+        .email-header {{ background:#f8f8f8; border:1px solid #ddd; padding:1em; margin-bottom:1em; }}
         .body {{ border-top: 1px solid #ccc; padding-top: 1em; }}
     </style>
 </head>
 <body>
-    <div class='meta'>
-        <strong>Subject:</strong> {System.Net.WebUtility.HtmlEncode(info.Subject)}<br>
-        <strong>From:</strong> {System.Net.WebUtility.HtmlEncode(info.Sender)}<br>
-        <strong>Date:</strong> {System.Net.WebUtility.HtmlEncode(info.Date)}<br>
-    </div>
-    <div class='recipients'>
-        <strong>Recipients:</strong><br>
-        {recipientsHtml}
-    </div>
+    {headerBlock}
     <div class='body'>
         {htmlBody}
     </div>

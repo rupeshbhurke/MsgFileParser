@@ -3,7 +3,8 @@ namespace MsgFileParser
     public class MsgFileInfo
     {
         public string? Subject { get; set; }
-        public string? Sender { get; set; }
+        public string? SenderEmail { get; set; }
+        public string? SenderDisplayName { get; set; }
         public string? Date { get; set; }
         public List<(string Email, string DisplayName)> Recipients { get; set; } = new();
         public string? BodyText { get; set; }

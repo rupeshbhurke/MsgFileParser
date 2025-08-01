@@ -10,7 +10,8 @@ namespace MsgFileParser
             var info = new MsgFileInfo
             {
                 Subject = msg.Subject ?? "",
-                Sender = msg.Sender?.ToString() ?? "",
+                SenderEmail = msg.Sender?.Email ?? "",
+                SenderDisplayName = msg.Sender?.DisplayName ?? "",
                 Date = msg.SentOn?.ToString("yyyy-MM-dd HH:mm:ss") ?? "",
                 BodyText = msg.BodyText ?? "",
                 BodyHtml = msg.BodyHtml ?? "",

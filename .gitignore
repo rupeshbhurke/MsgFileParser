@@ -375,3 +375,5 @@ FodyWeavers.xsd
 
 
 testing/
+data/
+publish.zip

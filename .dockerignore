@@ -1,0 +1,10 @@
+# .dockerignore
+bin/
+obj/
+*.msg
+*.txt
+.vscode/
+.idea/
+.git/
+.gitignore
+Dockerfile

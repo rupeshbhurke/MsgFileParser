@@ -1,3 +1,26 @@
+## Docker Usage
+
+You can run MsgFileParser in a container for easy deployment and consistent environment.
+
+### Build the Docker image
+```bash
+docker build -t msgfileparser .
+```
+
+### Run the parser in Docker
+Mount your working directory to access input/output files:
+```bash
+docker run --rm -v $(pwd):/data msgfileparser /data/1.msg /data/output.txt --text
+```
+Replace `/data/1.msg` and `/data/output.txt` with your actual file paths. You can use `--html` for HTML export.
+
+### Linux Dependency
+The container automatically installs `libgdiplus` and `libc6-dev` for MSGReader compatibility.
+
+### .dockerignore
+The build excludes test files, IDE configs, and build artifacts for smaller images.
+
+---
 # MSG File Parser
 
 A .NET 8.0 console application that extracts content from Microsoft Outlook MSG files and converts them to readable text format.

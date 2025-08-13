@@ -1,4 +1,146 @@
 
+# MSG File Parser
+
+A .NET 8.0 console application that extracts content from Microsoft Outlook MSG files and converts them to readable text format.
+
+## Table of Contents
+
+- [Features](#features)
+- [Prerequisites](#prerequisites)
+- [Installation of .NET SDK](#installation-of-net-sdk)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Examples](#examples)
+- [Output Format](#output-format)
+- [Dependencies](#dependencies)
+- [Docker Usage (Pre-built Executable)](#docker-usage-pre-built-executable)
+- [Technical Details](#technical-details)
+- [Error Handling & Exit Codes](#error-handling--exit-codes)
+- [Troubleshooting](#troubleshooting)
+- [Integration Guide](#integration-guide)
+- [Testing](#testing)
+- [Contributing](#contributing)
+- [License](#license)
+- [Support](#support)
+
+
+## Features
+
+- 📧 Extract email metadata (subject, sender, recipients, date)
+- 📝 Support for multiple body formats (Plain Text, HTML, RTF)
+- 🎯 Flexible output options (specific filename or directory)
+- ⚡ Fast and efficient processing
+- 🔧 Cross-platform compatibility (Windows, Linux, macOS)
+- 🛡️ Comprehensive input validation and error handling
+- ⚠️ Smart file format detection and warnings
+- 💾 Large file size warnings and memory protection
+- 🔒 File permission checking and access validation
+
+## Prerequisites
+
+- [.NET 8.0 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
+- For Linux users: `libgdiplus` library (usually pre-installed)
+
+## Installation of .NET SDK
+
+```bash
+wget https://dot.net/v1/dotnet-install.sh -O dotnet-install.sh
+chmod +x ./dotnet-install.sh
+./dotnet-install.sh --version latest
+```
+
+## Installation
+
+1. Clone or download this repository
+2. Navigate to the project directory
+3. Build the project:
+   ```bash
+   dotnet build
+   ```
+
+## Usage
+
+The application supports three different usage patterns:
+
+### 1. Specific Output Filename
+```bash
+dotnet run "input.msg" "output.txt"
+```
+Creates a file with your exact specified name and location.
+
+### 2. Directory Output
+```bash
+dotnet run "input.msg" "./output/"
+dotnet run "input.msg" "."
+```
+Auto-generates filename based on MSG file name and places it in the specified directory.
+
+### 3. Default Behavior
+```bash
+dotnet run "input.msg"
+```
+Auto-generates filename in the same directory as the MSG file.
+
+## Examples
+
+```bash
+# Extract to custom filename
+dotnet run "email.msg" "extracted_email.txt"
+
+# Extract to current directory with auto-generated name
+dotnet run "email.msg" "."
+
+# Extract to same directory as MSG file
+dotnet run "email.msg"
+
+# Extract to specific directory
+dotnet run "email.msg" "/path/to/output/"
+```
+
+## Output Format
+
+The application supports four different usage patterns:
+
+- **Subject**: Email subject line
+- **From**: Sender information
+- **Date**: Email timestamp (YYYY-MM-DD HH:mm:ss format)
+- **Recipients**: List of all recipients with email addresses and display names
+Creates a file with your exact specified name and location. You can specify the export format as a third argument:
+
+### Sample Output
+```
+Subject: Meeting Tomorrow
+From: john.doe@example.com
+Date: 2023-04-11 11:55:37
+
+Recipients:
+- jane.smith@example.com (Jane Smith)
+- team@example.com (Team)
+
+Body:
+Hello Team,
+ 
+### 4. Export Format
+You can specify the export format as a third argument:
+
+- `--text` (default): Export as plain text
+- `--html`: Export as HTML
+
+Please join us for the meeting tomorrow at 2 PM.
+
+Best regards,
+John
+```
+
+## Dependencies
+
+This project uses the following NuGet packages:
+
+- [MSGReader](https://www.nuget.org/packages/MSGReader/) (4.3.0) - For parsing MSG files
+- [System.Text.Encoding.CodePages](https://www.nuget.org/packages/System.Text.Encoding.CodePages/) (8.0.0) - For proper text encoding support
+
+dotnet run "email.msg" "/path/to/output.html" --html
+
 ## Docker Usage (Pre-built Executable)
 
 You can now build a Docker image using the pre-built self-contained executable from your local `publish/` folder. This approach is faster and produces a smaller image, as it skips the build process inside Docker.
@@ -47,9 +189,6 @@ The container automatically installs `libgdiplus` and `libc6-dev` for MSGReader 
 The build excludes test files, IDE configs, and build artifacts for smaller images.
 
 ---
-# MSG File Parser
-
-A .NET 8.0 console application that extracts content from Microsoft Outlook MSG files and converts them to readable text format.
 
 ## Features
 
